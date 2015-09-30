@@ -1,0 +1,1319 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imapper Package &mdash; imapper 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="imapper 0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">imapper 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="imapper-package">
+<h1>imapper Package<a class="headerlink" href="#imapper-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-imapper.errorbars">
+<span id="errorbars-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">errorbars</span></tt> Module<a class="headerlink" href="#module-imapper.errorbars" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="imapper.errorbars.autopower_errorbars">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">autopower_errorbars</tt><big>(</big><em>k</em>, <em>power</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.errorbars.autopower_errorbars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the error bars on P(k) (1-sigma uncertainty) as a function of k.</p>
+<p>This is a convenience method, which calls the internal method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>k</strong> : 1D array</p>
+<blockquote>
+<div><p>Values of k at which to calculate error bars on the power spectrum. [1/Mpc]</p>
+</div></blockquote>
+<p><strong>power</strong> : 1D array</p>
+<blockquote class="last">
+<div><p>Autopower spectrum at the corresponding values of k.  Should be the same length as <cite>k</cite>. [uK^2 Mpc^3]</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.autopower_noise_error">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">autopower_noise_error</tt><big>(</big><em>power</em>, <em>tsys</em>, <em>nfeeds</em>, <em>tobs</em>, <em>xarclen</em>, <em>yarclen</em>, <em>fwhm</em>, <em>nu_min</em>, <em>nu_max</em>, <em>dnu</em>, <em>nu0</em>, <em>k</em>, <em>cosmo</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#imapper.errorbars.autopower_noise_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get instrument sensitivity in power spectrum, provided a set of instrument parameters
+Required parameters for:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>power</strong> : ndarray</p>
+<blockquote>
+<div><p>must have same length as <cite>k</cite></p>
+</div></blockquote>
+<p><strong>tsys</strong> : float</p>
+<blockquote>
+<div><p>System temperature [K]</p>
+</div></blockquote>
+<p><strong>nfeeds</strong></p>
+<blockquote>
+<div><p>Number of feeds</p>
+</div></blockquote>
+<p><strong>tobs</strong></p>
+<blockquote>
+<div><p>Total observing time [s]</p>
+</div></blockquote>
+<p><strong>xarclen</strong></p>
+<blockquote>
+<div><p>Length of FOV [arcmin]</p>
+</div></blockquote>
+<p><strong>fwhm</strong></p>
+<blockquote>
+<div><p>FWHM of beam [arcmin]</p>
+</div></blockquote>
+<p><strong>nu_min</strong></p>
+<blockquote>
+<div><p>minimum observing frequency [GHz]</p>
+</div></blockquote>
+<p><strong>nu_max</strong></p>
+<blockquote>
+<div><p>maximum observing frequency [GHz]</p>
+</div></blockquote>
+<p><strong>dnu</strong></p>
+<blockquote>
+<div><p>frequency resolution [GHz]</p>
+</div></blockquote>
+<p><strong>nu0</strong></p>
+<blockquote>
+<div><p>rest-frame line frequency [GHz]</p>
+</div></blockquote>
+<p><strong>k</strong> : array</p>
+<blockquote>
+<div><p>a vector of k at which to calculate power noise</p>
+</div></blockquote>
+<p><strong>cosmo</strong> : astropy.cosmology object</p>
+<blockquote>
+<div><p>For cosmology calculations</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>sigma_power</strong> : array</p>
+<blockquote>
+<div><p>Expected error bars in power spectrum as a function of <cite>k</cite>.  Units of [uK^2 * Mpc^3].  Same dimensions as <cite>k</cite>.</p>
+</div></blockquote>
+<p><strong>noise_power</strong> : array</p>
+<p><strong>nmodes</strong> : array</p>
+<p class="last"><strong>res_factor</strong> : array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.crosspower_noise_sens">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">crosspower_noise_sens</tt><big>(</big><em>instrument1_params</em>, <em>instrument2_params</em>, <em>cosmology</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.errorbars.crosspower_noise_sens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get instrument sensitivity in power spectrum, provided a set of instrument parameters
+Required parameters for:</p>
+<p>instrument_params
+&#8211; tsys
+&#8211; dnu
+&#8211; nfeeds
+&#8211; tobs
+&#8211; area
+&#8211; fwhm
+&#8211; zobs
+&#8211; zmin
+&#8211; zmax
+&#8211; nu0
+&#8211; k</p>
+<p>cosmology
+&#8211; h
+&#8211; omega_M_0
+&#8211; omega_lambda_0</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.dco_between">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">dco_between</tt><big>(</big><em>zlo</em>, <em>zhi</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.errorbars.dco_between" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the comoving distance [Mpc] between two redshifts in a given cosmology.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.fwhm_to_sigma">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">fwhm_to_sigma</tt><big>(</big><em>fwhm</em><big>)</big><a class="headerlink" href="#imapper.errorbars.fwhm_to_sigma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate Gaussian sigma (standard deviation) from FWHM value.</p>
+<p>The relation between them is: fwhm = sqrt(8ln2) * sigma</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.kmax_parallel">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">kmax_parallel</tt><big>(</big><em>zobs</em>, <em>nu_obs</em>, <em>dnu</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.errorbars.kmax_parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate maximum k (along line of sight) from frequency resolution</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.kmax_perpendicular">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">kmax_perpendicular</tt><big>(</big><em>d_comoving</em>, <em>sigma_beam</em>, <em>mode=None</em><big>)</big><a class="headerlink" href="#imapper.errorbars.kmax_perpendicular" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate maximum k (across sky) from angular resolution</p>
+<p>d_comoving : comoving radial distance (pre-calculated from redshift) [Mpc]
+sigma_beam : arc length of beam width [radians]
+mode : if &#8216;lidz11&#8217;, use incorrect formula of Lidz+11 (and Gong+12)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.num_modes">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">num_modes</tt><big>(</big><em>k</em>, <em>vol</em><big>)</big><a class="headerlink" href="#imapper.errorbars.num_modes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the number of modes in a given volume as a function of k.</p>
+<p>There is a factor of 1/2 out front because the 3D intensity map is real-valued, so only half the modes are independent.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.res_damping">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">res_damping</tt><big>(</big><em>k</em>, <em>kmax_par</em>, <em>kmax_prp</em>, <em>nmu=100</em><big>)</big><a class="headerlink" href="#imapper.errorbars.res_damping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolution-limit &#8220;damping&#8221; factor on the power spectrum, as a function of k</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>k</strong> : ndarray</p>
+<p><strong>kmax_par</strong> : float</p>
+<p><strong>kmax_prp</strong> : float</p>
+<p class="last"><strong>nmu</strong> : int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.sigma_radiometer">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">sigma_radiometer</tt><big>(</big><em>area_surv</em>, <em>area_res</em>, <em>tobs</em>, <em>tsys</em>, <em>dnu</em>, <em>nfeeds</em><big>)</big><a class="headerlink" href="#imapper.errorbars.sigma_radiometer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate sensitivity per voxel by evaluating the radiometer equation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>area_surv    [deg^2]</strong> : Area of full survey</p>
+<p><strong>area_res  [arcmin^2]</strong> : Area of angular resolution (beam size)</p>
+<p><strong>tobs    [s]</strong> : Total observing time</p>
+<p><strong>tsys    [K]</strong> : System temperature</p>
+<p><strong>dnu     [GHz]</strong> : Voxel width in frequency</p>
+<p><strong>nfeeds</strong> : Number of collecting feeds</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>sigma</strong> : expected temperature fluctuation per pixel [uK]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.errorbars.voxel_volume">
+<tt class="descclassname">imapper.errorbars.</tt><tt class="descname">voxel_volume</tt><big>(</big><em>dco</em>, <em>sig_beam</em>, <em>nu_rest</em>, <em>nu_obs</em>, <em>dnu</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.errorbars.voxel_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get comoving voxel volume</p>
+<p>dco         : comoving distance
+sig_beam    : beam width
+nu_rest     : rest frame line frequency
+nu_obs      : observed frequency
+dnu         : frequency channel width
+cosmo       : astropy.cosmology object (contains cosmological info)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-imapper.functions">
+<span id="functions-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">functions</span></tt> Module<a class="headerlink" href="#module-imapper.functions" title="Permalink to this headline">¶</a></h2>
+<p>Helper functions for intensity mapping code.</p>
+<dl class="function">
+<dt id="imapper.functions.angfreqbins_to_redshiftcube">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">angfreqbins_to_redshiftcube</tt><big>(</big><em>angfreq</em>, <em>nurest</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.angfreqbins_to_redshiftcube" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>angfreq</strong> : 3-tuple of 1d arrays</p>
+<blockquote>
+<div><p>arrays of bin edges in (arcmin, arcmin, and [freq]) respectively</p>
+</div></blockquote>
+<p><strong>nurest</strong> : float</p>
+<blockquote>
+<div><p>rest frame frequency of spectral line of interest</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>redshiftcube</strong> : 3d array</p>
+<blockquote class="last">
+<div><p>3d array of redshifts (will only vary in depth, aka z, direction)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.angfreqbins_to_vol">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">angfreqbins_to_vol</tt><big>(</big><em>angfreqbins</em>, <em>nurest</em>, <em>params</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.functions.angfreqbins_to_vol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert angxangxfreq bins to grid of comoving cell volumes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>angfreqbins</strong> : 3-tuple of 1d arrays</p>
+<blockquote>
+<div><p>arrays of bin edges in (arcmin, arcmin, and [freq]) respectively</p>
+</div></blockquote>
+<p><strong>nurest</strong> : float</p>
+<blockquote>
+<div><p>rest frame frequency of spectral line of interest</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>vol</strong> : 3d array</p>
+<blockquote class="last">
+<div><p>3d array of volume elements, in Mpc^3</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.angfreqgrid_to_comovinggrid">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">angfreqgrid_to_comovinggrid</tt><big>(</big><em>xa</em>, <em>ya</em>, <em>zf</em>, <em>f</em>, <em>nu_z0</em>, <em>params</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.functions.angfreqgrid_to_comovinggrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a field on an (ang x ang x freq) grid to a 3D comoving grid</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.arcmin_to_comovingMpc">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">arcmin_to_comovingMpc</tt><big>(</big><em>arcmin</em>, <em>z</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.functions.arcmin_to_comovingMpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert arcmin to transverse comoving Mpc, assuming a given redshift and cosmology.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>arcmin</strong> : float or array-like</p>
+<blockquote>
+<div><p>length in arcminutes</p>
+</div></blockquote>
+<p><strong>z</strong> : float</p>
+<blockquote>
+<div><p>redshift</p>
+</div></blockquote>
+<p><strong>cosmo</strong> : astropy.cosmology object</p>
+<blockquote>
+<div><p>assumed cosmology</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dco</strong> : float or array-like</p>
+<blockquote class="last">
+<div><p>Comoving distance in Mpc</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.bin_centers">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">bin_centers</tt><big>(</big><em>bin_edges</em>, <em>log=False</em><big>)</big><a class="headerlink" href="#imapper.functions.bin_centers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an ordered sequence of bin edges, compute the midpoints</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.bin_lengths">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">bin_lengths</tt><big>(</big><em>bin_edges</em><big>)</big><a class="headerlink" href="#imapper.functions.bin_lengths" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>bin_edges</strong> : 1d array</p>
+<blockquote>
+<div><p>n-element 1D array of monotonically increasing bin edges</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>bin_lengths</strong> : 1d array</p>
+<blockquote class="last">
+<div><p>(n-1)-element 1D array of bin lengths</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.comov_to_angfreq">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">comov_to_angfreq</tt><big>(</big><em>comov</em>, <em>nurest</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.comov_to_angfreq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert comoving grid to angxangxfreq grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>comov</strong> : 3-tuple</p>
+<blockquote>
+<div><p>a 3-tuple with 1D x, y, z arrays, respectively</p>
+</div></blockquote>
+<p><strong>nurest</strong> : float</p>
+<blockquote>
+<div><p>rest frame frequency of spectral line of interest</p>
+</div></blockquote>
+<p><strong>params :</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>xa</strong> : float array</p>
+<blockquote>
+<div><p>x in units of arcmin</p>
+</div></blockquote>
+<p><strong>ya</strong> : float array</p>
+<blockquote>
+<div><p>y in units of arcmin</p>
+</div></blockquote>
+<p><strong>zf</strong> : float array</p>
+<blockquote class="last">
+<div><p>z in units of frequency, same units as nurest</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.comovbins_to_vol">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">comovbins_to_vol</tt><big>(</big><em>comovbins</em>, <em>nurest</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.comovbins_to_vol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.comovingMpc_to_arcmin">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">comovingMpc_to_arcmin</tt><big>(</big><em>dco</em>, <em>z</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.functions.comovingMpc_to_arcmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert transverse comoving Mpc to arcmin, assuming a given redshift and cosmology.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dco</strong> : float or array-like</p>
+<blockquote>
+<div><p>Comoving distance in Mpc</p>
+</div></blockquote>
+<p><strong>z</strong> : float or array-like</p>
+<blockquote>
+<div><p>redshift</p>
+</div></blockquote>
+<p><strong>cosmo</strong> : astropy.cosmology object</p>
+<blockquote>
+<div><p>assumed cosmology</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>arcmin</strong> : float or array-like</p>
+<blockquote class="last">
+<div><p>length in arcminutes</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.comovingMpc_to_nu">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">comovingMpc_to_nu</tt><big>(</big><em>dco</em>, <em>nu0</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.functions.comovingMpc_to_nu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert comoving radial distance to observed frequency, assuming a given rest-frame frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dco</strong> : float or array-like</p>
+<blockquote>
+<div><p>Comoving distance in Mpc</p>
+</div></blockquote>
+<p><strong>nu0</strong> : float</p>
+<blockquote>
+<div><p>Rest frame frequency</p>
+</div></blockquote>
+<p><strong>cosmo</strong> : astropy.cosmology object</p>
+<blockquote>
+<div><p>assumed cosmology</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>nu</strong> : float or array-like</p>
+<blockquote class="last">
+<div><p>Observed frequency, same units as nu0</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.comovingMpc_to_z">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">comovingMpc_to_z</tt><big>(</big><em>dco</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.functions.comovingMpc_to_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert comoving depth to redshift.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.cut_halos">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">cut_halos</tt><big>(</big><em>halos</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.cut_halos" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>halos <span class="classifier-delimiter">:</span> <span class="classifier">HaloList object</span></dt>
+<dd>halo properties (x position, parent id, etc.)</dd>
+<dt>params <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>dictionary of parameter values</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.dnu_to_comovingMpc">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">dnu_to_comovingMpc</tt><big>(</big><em>dnu</em>, <em>nu0</em>, <em>redshift</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.functions.dnu_to_comovingMpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert frequency interval to comoving depth interval, given rest-frame frequency.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.ensure_dir">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">ensure_dir</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#imapper.functions.ensure_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that directory exists (create if it doesn&#8217;t)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.is_evenly_spaced">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">is_evenly_spaced</tt><big>(</big><em>arr</em><big>)</big><a class="headerlink" href="#imapper.functions.is_evenly_spaced" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an array has evenly spaced elements (linear)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.load_cube">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">load_cube</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.load_cube" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.load_halos">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">load_halos</tt><big>(</big><em>params</em>, <em>filenum=None</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.functions.load_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load halo catalog, and store halo properties in a HaloList object (see &#8216;halolist&#8217; module).</p>
+<dl class="docutils">
+<dt>The location of the halo data should be stored in &#8216;params&#8217; as a string.  The file itself should in the <a href="#id1"><span class="problematic" id="id2">*</span></a>.npz format, and the halo properties included must be:</dt>
+<dd>x
+y
+z
+m
+ra
+dec
+...[unfinished]</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>params</strong></p>
+<blockquote>
+<div><p>dictionary containing all parameter values</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>halos</strong> : HaloList object</p>
+<blockquote class="last">
+<div><p>object containing halo properties</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.lsun_to_uk">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">lsun_to_uk</tt><big>(</big><em>lum</em>, <em>nurest</em>, <em>vol</em>, <em>redshift</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.functions.lsun_to_uk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert line luminosity at a given frequency to Raleigh-Jeans temperature.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>lum</strong> : float or array</p>
+<blockquote>
+<div><p>total luminosity within spectral bin [Lsun]</p>
+</div></blockquote>
+<p><strong>nurest</strong> : float</p>
+<blockquote>
+<div><p>rest-frame line frequency (GHz)</p>
+</div></blockquote>
+<p><strong>vol</strong> : float or array</p>
+<blockquote>
+<div><p>comoving volume [Mpc^3]</p>
+</div></blockquote>
+<p><strong>redshift</strong> : float or array</p>
+<blockquote>
+<div><p>redshift</p>
+</div></blockquote>
+<p><strong>cosmo</strong> : astropy.cosmology object</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>temprj</strong> : float or array</p>
+<blockquote class="last">
+<div><p>Rayleigh-Jeans brightness temperature</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.save_corrfunction">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">save_corrfunction</tt><big>(</big><em>k</em>, <em>p</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.save_corrfunction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.save_cube">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">save_cube</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em>, <em>t</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.save_cube" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save temperature cube to file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.save_paramfile">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">save_paramfile</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.save_paramfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.save_powercyl">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">save_powercyl</tt><big>(</big><em>kprp</em>, <em>kpar</em>, <em>pcyl</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.save_powercyl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.save_powerspectrum">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">save_powerspectrum</tt><big>(</big><em>k</em>, <em>p</em>, <em>perr</em>, <em>pnoise</em>, <em>nmodes</em>, <em>fres</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.save_powerspectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.save_powersph">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">save_powersph</tt><big>(</big><em>k</em>, <em>p</em>, <em>perr</em>, <em>pnoise</em>, <em>nmodes</em>, <em>fres</em>, <em>params</em><big>)</big><a class="headerlink" href="#imapper.functions.save_powersph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.uk_to_mjy">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">uk_to_mjy</tt><big>(</big><em>t_uK</em>, <em>nu_GHz</em>, <em>th_arcmin</em><big>)</big><a class="headerlink" href="#imapper.functions.uk_to_mjy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert brightness temperature [uK] to flux density [mJy].</p>
+<dl class="docutils">
+<dt>See equation at <a class="reference external" href="https://science.nrao.edu/facilities/vla/proposing/TBconv">https://science.nrao.edu/facilities/vla/proposing/TBconv</a>:</dt>
+<dd>T = 1.36 * ( lambda[cm]^2 / theta[arcsec]^2 ) * S[mJy/beam]</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>t_uK: brightness temperature in uK</strong></p>
+<blockquote>
+<div><p>nu_GHz: frequency in GHz
+th_arcmin: FWHM in arcmin</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last">s_mJy (float): flux density in mJy</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.functions.z_to_comovingMpc">
+<tt class="descclassname">imapper.functions.</tt><tt class="descname">z_to_comovingMpc</tt><big>(</big><em>redshift</em>, <em>cosmo</em><big>)</big><a class="headerlink" href="#imapper.functions.z_to_comovingMpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert redshift to comoving depth.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-imapper.grid">
+<span id="grid-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">grid</span></tt> Module<a class="headerlink" href="#module-imapper.grid" title="Permalink to this headline">¶</a></h2>
+<p>Module containing IMGrid, a class for grid objects, as well as helper functions</p>
+<dl class="class">
+<dt id="imapper.grid.IMGrid">
+<em class="property">class </em><tt class="descclassname">imapper.grid.</tt><tt class="descname">IMGrid</tt><big>(</big><em>params</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.grid.IMGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Object storing intensity mapping grids.</p>
+<p>This is useful for conserving memory in case repeated runs are necessary within the same volume (e.g. when sampling parameter space during an MCMC run).</p>
+<p>Contains the following attributes
+- angfreqbins:  ang x ang x freq bins
+- lumcube:      luminosities in each grid cell (not necessarily defined at creation)
+The binning in each should be equivalent (i.e. objects in the ijk-th bin of
+the ang-ang-freq grid should also be in the same ijk-th bin of the comoving
+grid).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.grid.angfreq_to_comov_grid">
+<tt class="descclassname">imapper.grid.</tt><tt class="descname">angfreq_to_comov_grid</tt><big>(</big><em>angfreqbins</em>, <em>params</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.grid.angfreq_to_comov_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a field on an (ang x ang x freq) grid to a 3D comoving grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>angfreqbins</strong> : tuple or list of arrays, length (M+1, N+1, P+1)</p>
+<blockquote>
+<div><p>bin edges of angular and frequency directions</p>
+</div></blockquote>
+<p><strong>nu_z0</strong> : float</p>
+<blockquote class="last">
+<div><p>observed (redshifted) frequency of mapped line at z=0</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.grid.getangfreqbins">
+<tt class="descclassname">imapper.grid.</tt><tt class="descname">getangfreqbins</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#imapper.grid.getangfreqbins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get data cube bins in angular and frequency coordinates.</p>
+<p>The 3D data cube is assumed to have 2 angular (x,y) and 1 frequency (z)
+dimensions.  Units are arcmin for angle, GHz for frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>params</strong> : parameter object</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>abins</strong> : 1D array</p>
+<blockquote>
+<div><p>Angular bins edges in x direction [arcmin]</p>
+</div></blockquote>
+<p><strong>abins</strong> : 1D array</p>
+<blockquote>
+<div><p>Angular bins edges in y direction [arcmin]</p>
+</div></blockquote>
+<p><strong>fbins</strong> : 1D array</p>
+<blockquote class="last">
+<div><p>Frequency bins edges in z direction [GHz]</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-imapper.halolco">
+<span id="halolco-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">halolco</span></tt> Module<a class="headerlink" href="#module-imapper.halolco" title="Permalink to this headline">¶</a></h2>
+<p>Module for calculating line luminosities from halos.</p>
+<p>Broadly speaking, halos come in, line luminosities go out.</p>
+<dl class="function">
+<dt id="imapper.halolco.co_sled">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">co_sled</tt><big>(</big><em>j</em>, <em>mode='thermal'</em><big>)</big><a class="headerlink" href="#imapper.halolco.co_sled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns luminosity normalization factor L(j -&gt; j-1)/L(1 -&gt; 0)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.halotolco_preset">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">halotolco_preset</tt><big>(</big><em>mass</em>, <em>mode</em><big>)</big><a class="headerlink" href="#imapper.halolco.halotolco_preset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preset LCO-Mhalo scaling, from previous studies</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>mass</strong> : float or array</p>
+<blockquote>
+<div><p>halo masses in Msun</p>
+</div></blockquote>
+<p><strong>mode</strong> : string</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>Which preset halo-lco relation to use.  Acceptable values:</dt>
+<dd><p class="first last">&#8216;righi08&#8217;     : Righi et al. 2008
+&#8216;visbal10&#8217;    : Visbal &amp; Loeb 2010
+&#8216;lidz11&#8217;      : Lidz et al. 2011
+&#8216;pullen13A&#8217;  : Pullen et al. 2013 (model A)
+&#8216;pullen13B&#8217;  : Pullen et al. 2013 (model B)</p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.lir_to_lcoprime">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">lir_to_lcoprime</tt><big>(</big><em>lir</em>, <em>alpha=1.37</em>, <em>beta=-1.74</em><big>)</big><a class="headerlink" href="#imapper.halolco.lir_to_lcoprime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute LCO&#8217; from LIR assuming a power-law relation between them.</p>
+<dl class="docutils">
+<dt>Assumed LIR-LCO&#8217; relation of the form:</dt>
+<dd>log(LIR) = alpha * log(LCO&#8217;) + beta</dd>
+</dl>
+<p>This function inverts that relation.  alpha=1.37, beta=-1.74 are values from Carilli+Walter13.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.logscatter">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">logscatter</tt><big>(</big><em>x</em>, <em>dexscatter</em><big>)</big><a class="headerlink" href="#imapper.halolco.logscatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return array x, randomly scattered by a log-normal distribution with sigma=dexscatter.  Maintain mean in linear space (not log space).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.lprime_to_l">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">lprime_to_l</tt><big>(</big><em>lprime</em>, <em>nurest</em><big>)</big><a class="headerlink" href="#imapper.halolco.lprime_to_l" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert L&#8217; (integrated brightness temperature) to L (luminosity)</p>
+<p>lprime : area- and velocity-integrated brightness temperature [K km/s pc^2]</p>
+<p>nurest : Rest-frame line frequency [GHz]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.mhalo_to_sfr">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">mhalo_to_sfr</tt><big>(</big><em>halos</em>, <em>params</em>, <em>verbose=True</em>, <em>reuse_sfr=False</em><big>)</big><a class="headerlink" href="#imapper.halolco.mhalo_to_sfr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign SFRs to dark matter halos.</p>
+<p>This is the first step in the halo-LCO conversion.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.powerlaw">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">powerlaw</tt><big>(</big><em>x</em>, <em>pow</em>, <em>prefac</em><big>)</big><a class="headerlink" href="#imapper.halolco.powerlaw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.sfr_bwc13">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">sfr_bwc13</tt><big>(</big><em>mass</em>, <em>redshift</em>, <em>mode=None</em><big>)</big><a class="headerlink" href="#imapper.halolco.sfr_bwc13" title="Permalink to this definition">¶</a></dt>
+<dd><p>SFR(M,z) relation of Behroozi, Wechsler, and Conroy 2013</p>
+<p>Takes in Mhalo and redshift, returns an interpolated SFR</p>
+<dl class="docutils">
+<dt>redshift <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>redshift at which to interpolate</dd>
+<dt>mass <span class="classifier-delimiter">:</span> <span class="classifier">float array</span></dt>
+<dd>halo masses</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">None or str</span></dt>
+<dd>None : default mode, uses &#8216;sfr_release&#8217; values from paper
+&#8216;lo&#8217; : uses sfr - error
+&#8216;hi&#8217; : uses sfr + error</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.sfr_bwc13_scatter">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">sfr_bwc13_scatter</tt><big>(</big><em>mass</em>, <em>redshift</em>, <em>scatter=0.25</em>, <em>mode='dex'</em><big>)</big><a class="headerlink" href="#imapper.halolco.sfr_bwc13_scatter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.sfr_to_lco">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">sfr_to_lco</tt><big>(</big><em>halos</em>, <em>params</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.halolco.sfr_to_lco" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert SFR to LCO</p>
+<p>This is the 2nd step in the halo-LCO conversion.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.sfr_to_lco_shortcut1">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">sfr_to_lco_shortcut1</tt><big>(</big><em>sfr</em>, <em>alpha</em>, <em>beta</em>, <em>deltamf</em><big>)</big><a class="headerlink" href="#imapper.halolco.sfr_to_lco_shortcut1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of:
+log LCO = log SFR</p>
+<blockquote>
+<div><ul class="simple">
+<li>10</li>
+<li>alpha*[ log3 + 3log115 -11 ]</li>
+</ul>
+<ul class="simple">
+<li>beta - log(deltamf)</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.halolco.sfr_to_lir">
+<tt class="descclassname">imapper.halolco.</tt><tt class="descname">sfr_to_lir</tt><big>(</big><em>sfr</em>, <em>deltamf=1.5</em><big>)</big><a class="headerlink" href="#imapper.halolco.sfr_to_lir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert SFR to LIR using Kennicutt98 relation.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-imapper.halolist">
+<span id="halolist-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">halolist</span></tt> Module<a class="headerlink" href="#module-imapper.halolist" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="imapper.halolist.HaloList">
+<em class="property">class </em><tt class="descclassname">imapper.halolist.</tt><tt class="descname">HaloList</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#imapper.halolist.HaloList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-imapper.imapping">
+<span id="imapping-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">imapping</span></tt> Module<a class="headerlink" href="#module-imapper.imapping" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="imapper.imapping.get_halo_cellidx">
+<tt class="descclassname">imapper.imapping.</tt><tt class="descname">get_halo_cellidx</tt><big>(</big><em>hxa</em>, <em>hya</em>, <em>hzf</em>, <em>angfreqbins</em><big>)</big><a class="headerlink" href="#imapper.imapping.get_halo_cellidx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the cell indices of each halo</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>hxa</strong> : 1D float array</p>
+<blockquote>
+<div><p>halo x-coordinates, angular units (RA)</p>
+</div></blockquote>
+<p><strong>hya</strong> : 1D float array</p>
+<blockquote>
+<div><p>halo y-coordinates, angular units (Dec)</p>
+</div></blockquote>
+<p><strong>hzf</strong> : 1D float array</p>
+<blockquote>
+<div><p>halo z-coordinates, frequency units (observed frequency)</p>
+</div></blockquote>
+<p><strong>angfreqbins</strong> : list or tuple</p>
+<blockquote>
+<div><p>3 arrays of the bin edges in the x,y,z directions. RA, Dec, and
+frequency bin edges are given by <tt class="docutils literal"><span class="pre">angfreqbins[0,1,2]</span></tt> respectively.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first">cellidx :</p>
+<blockquote class="last">
+<div><p>[UNFINISHED]</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.imapping.lcube_to_tcube">
+<tt class="descclassname">imapper.imapping.</tt><tt class="descname">lcube_to_tcube</tt><big>(</big><em>lcube</em>, <em>angfreqbins</em>, <em>nurest</em>, <em>cosmo</em>, <em>params</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.imapping.lcube_to_tcube" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.imapping.lhalo_to_lcube">
+<tt class="descclassname">imapper.imapping.</tt><tt class="descname">lhalo_to_lcube</tt><big>(</big><em>hxa</em>, <em>hya</em>, <em>hzf</em>, <em>hlco</em>, <em>angfreqbins</em>, <em>nurest</em>, <em>cosmo</em>, <em>hbinidx=None</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.imapping.lhalo_to_lcube" title="Permalink to this definition">¶</a></dt>
+<dd><p>[placeholder]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.imapping.lum_to_tcube">
+<tt class="descclassname">imapper.imapping.</tt><tt class="descname">lum_to_tcube</tt><big>(</big><em>halos</em>, <em>imgrid</em>, <em>params</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.imapping.lum_to_tcube" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience wrapper function. Calculates brightness temperature cube, given source (halo) luminosities and positions.</p>
+<p>Returns 1D coordinate array and a 3D numpy array: 2 angular dimensions (transverse on sky), 1 frequency dimension (depth).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>halos</strong> : HaloList object</p>
+<p><strong>params</strong> : dict</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>xang</strong> : float array</p>
+<blockquote>
+<div><p>first dimension of transverse angular distance on sky</p>
+</div></blockquote>
+<p><strong>yang</strong> : float array</p>
+<blockquote>
+<div><p>second dimension of transverse angular distance on sky</p>
+</div></blockquote>
+<p><strong>zfreq</strong> : float array</p>
+<blockquote>
+<div><p>third dimension of frequency.  For signals originating from a single spectral line (e.g. CO(1-0)), this corresponds to depth</p>
+</div></blockquote>
+<p><strong>tcube</strong> : float array</p>
+<blockquote class="last">
+<div><p>brightness temperature data cube.  For coordinates given by (xang[xi], yang[yi], zfreq[zi]), where (xi, yi, zi) are array indices, the corresponding brightness temperature is tcube[xi, yi, zi].</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-imapper.mapit">
+<span id="mapit-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">mapit</span></tt> Module<a class="headerlink" href="#module-imapper.mapit" title="Permalink to this headline">¶</a></h2>
+<p>Command line executable for running the intensity mapper.</p>
+<p>Usage:</p>
+<p>mapit.py [parameter_file]</p>
+<dl class="function">
+<dt id="imapper.mapit.get_args">
+<tt class="descclassname">imapper.mapit.</tt><tt class="descname">get_args</tt><big>(</big><big>)</big><a class="headerlink" href="#imapper.mapit.get_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.mapit.get_halos">
+<tt class="descclassname">imapper.mapit.</tt><tt class="descname">get_halos</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#imapper.mapit.get_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns HaloList object (with selection cuts applied, etc)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.mapit.get_powercyl">
+<tt class="descclassname">imapper.mapit.</tt><tt class="descname">get_powercyl</tt><big>(</big><em>imgrid</em><big>)</big><a class="headerlink" href="#imapper.mapit.get_powercyl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return kprp, kpar, P(kprp, kpar) of cylindrically averaged power spectrum</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.mapit.get_powersph">
+<tt class="descclassname">imapper.mapit.</tt><tt class="descname">get_powersph</tt><big>(</big><em>imgrid</em><big>)</big><a class="headerlink" href="#imapper.mapit.get_powersph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return k, P(k) of spherically averaged power spectrum</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.mapit.main">
+<tt class="descclassname">imapper.mapit.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="headerlink" href="#imapper.mapit.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-imapper.parameters">
+<span id="parameters-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">parameters</span></tt> Module<a class="headerlink" href="#module-imapper.parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="imapper.parameters.check_deprecated">
+<tt class="descclassname">imapper.parameters.</tt><tt class="descname">check_deprecated</tt><big>(</big><em>raw_params</em><big>)</big><a class="headerlink" href="#imapper.parameters.check_deprecated" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.parameters.get_cosmology_parameters">
+<tt class="descclassname">imapper.parameters.</tt><tt class="descname">get_cosmology_parameters</tt><big>(</big><em>raw_params</em><big>)</big><a class="headerlink" href="#imapper.parameters.get_cosmology_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cosmo</strong> : astropy.cosmology object</p>
+<blockquote class="last">
+<div><p>object containing cosmological parameters</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.parameters.get_instrument_parameters">
+<tt class="descclassname">imapper.parameters.</tt><tt class="descname">get_instrument_parameters</tt><big>(</big><em>raw_params</em><big>)</big><a class="headerlink" href="#imapper.parameters.get_instrument_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>instr</strong> : dict</p>
+<blockquote class="last">
+<div><p>instrument parameters</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.parameters.get_params">
+<tt class="descclassname">imapper.parameters.</tt><tt class="descname">get_params</tt><big>(</big><em>filepath</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#imapper.parameters.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameter values and return them in the form of a dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>path to parameter file</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.parameters.get_survey_parameters">
+<tt class="descclassname">imapper.parameters.</tt><tt class="descname">get_survey_parameters</tt><big>(</big><em>raw_params</em><big>)</big><a class="headerlink" href="#imapper.parameters.get_survey_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>survey</strong> : dict</p>
+<blockquote class="last">
+<div><p>survey parameters</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.parameters.get_tsys">
+<tt class="descclassname">imapper.parameters.</tt><tt class="descname">get_tsys</tt><big>(</big><em>raw_params</em><big>)</big><a class="headerlink" href="#imapper.parameters.get_tsys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.parameters.is_true">
+<tt class="descclassname">imapper.parameters.</tt><tt class="descname">is_true</tt><big>(</big><em>raw_params</em>, <em>key</em><big>)</big><a class="headerlink" href="#imapper.parameters.is_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is raw_params[key] true? Returns boolean value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.parameters.validate_params">
+<tt class="descclassname">imapper.parameters.</tt><tt class="descname">validate_params</tt><big>(</big><em>params</em><big>)</big><a class="headerlink" href="#imapper.parameters.validate_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate parameters and correct if necessary.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-imapper.pencilbeam">
+<span id="pencilbeam-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">pencilbeam</span></tt> Module<a class="headerlink" href="#module-imapper.pencilbeam" title="Permalink to this headline">¶</a></h2>
+<p>Functions for dealing with pencilbeam (1D, line-of-sight) spectra</p>
+<dl class="function">
+<dt id="imapper.pencilbeam.ciruclar_pencilbeam_spectrum">
+<tt class="descclassname">imapper.pencilbeam.</tt><tt class="descname">ciruclar_pencilbeam_spectrum</tt><big>(</big><em>mass, ra, dec, zcos, zlos, vmax, beamwidth, rsd_on=False, broadening_on=False, nu0=115.27, nuband=[30, 34], dnu=0.01, beam_center=None</em><big>)</big><a class="headerlink" href="#imapper.pencilbeam.ciruclar_pencilbeam_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a circular pencilbeam (1D) spectrum from a sub-selection of the given halos</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.pencilbeam.vel_to_dnuobs">
+<tt class="descclassname">imapper.pencilbeam.</tt><tt class="descname">vel_to_dnuobs</tt><big>(</big><em>vel</em>, <em>nu0</em>, <em>redshift</em><big>)</big><a class="headerlink" href="#imapper.pencilbeam.vel_to_dnuobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert line-of-sight velocity to observed frequency shift</p>
+</dd></dl>
+
+</div>
+<div class="section" id="power-analytic-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">power_analytic</span></tt> Module<a class="headerlink" href="#power-analytic-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-imapper.powerspectrum">
+<span id="powerspectrum-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">powerspectrum</span></tt> Module<a class="headerlink" href="#module-imapper.powerspectrum" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="imapper.powerspectrum.f3d_to_fcylavg">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">f3d_to_fcylavg</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em>, <em>z</em>, <em>bins=None</em>, <em>log=False</em>, <em>reuse_grid=False</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.f3d_to_fcylavg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cylindrically average a function initially defined on a 3D grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>func :</strong></p>
+<p><strong>x :</strong></p>
+<p><strong>y :</strong></p>
+<p><strong>z :</strong></p>
+<p><strong>bins :</strong></p>
+<blockquote class="last">
+<div><p>Number of bins, in the form (kprp, kpar)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.f3d_to_fsphavg">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">f3d_to_fsphavg</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em>, <em>z</em>, <em>bins=None</em>, <em>log=False</em>, <em>reuse_grid=False</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.f3d_to_fsphavg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spherically average a function initially defined on a 3d grid</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.fft_fftw3">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">fft_fftw3</tt><big>(</big><em>f</em>, <em>nthreads=1</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.fft_fftw3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real2d_to_powsph">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real2d_to_powsph</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real2d_to_powsph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real_to_corrfunction">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real_to_corrfunction</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real_to_corrfunction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real_to_fourier">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real_to_fourier</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em>, <em>z</em>, <em>reuse_grid=False</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real_to_fourier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real_to_pow2d">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real_to_pow2d</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real_to_pow2d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real_to_pow3d">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real_to_pow3d</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em>, <em>z</em>, <em>reuse_grid=False</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real_to_pow3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a 3D power spectrum, given:
+&#8211; a function defined on a 3D grid of evenly-spaced (x,y,z) points
+&#8211; a 1D array of the sampled points in each dimension (x,y,z)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real_to_powcyl">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real_to_powcyl</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em>, <em>z</em>, <em>reuse_grid=False</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real_to_powcyl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a real 3d function to cylindrically averaged power spectru, P(kpar, kprp).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>func :</strong></p>
+<p><strong>x :</strong></p>
+<p><strong>y :</strong></p>
+<p><strong>z :</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first">kprp :</p>
+<blockquote>
+<div><p>perpendicular component of k (i.e. x and y)</p>
+</div></blockquote>
+<p>kpar :</p>
+<blockquote>
+<div><p>parallel component of k (i.e. z)</p>
+</div></blockquote>
+<p class="last">powercyl :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real_to_powsph">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real_to_powsph</tt><big>(</big><em>func</em>, <em>x</em>, <em>y</em>, <em>z</em>, <em>reuse_grid=False</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real_to_powsph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert real function to a spherically averaged power spectrum, P(k).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>func :</strong></p>
+<p><strong>x :</strong></p>
+<p><strong>y :</strong></p>
+<p><strong>z :</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first">k :</p>
+<p class="last">powersph :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real_to_xpow3d">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real_to_xpow3d</tt><big>(</big><em>f1</em>, <em>f2</em>, <em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real_to_xpow3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a 3D cross power spectrum, given:
+&#8211; two functions defined on a 3D grid of evenly-spaced (x,y,z) points
+&#8211; a 1D array of the sampled points in each dimension (x,y,z)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.real_to_xpowsph">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">real_to_xpowsph</tt><big>(</big><em>f1</em>, <em>f2</em>, <em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.real_to_xpowsph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert 2 intensity maps to a spherically averaged cross power spectrum, P(k)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.xyz_to_rcylbins">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">xyz_to_rcylbins</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em>, <em>bins=None</em>, <em>log=False</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.xyz_to_rcylbins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform Cartesian grid (x,y,z) to cylindrical bins (radial and z)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="imapper.powerspectrum.xyz_to_rsphbins">
+<tt class="descclassname">imapper.powerspectrum.</tt><tt class="descname">xyz_to_rsphbins</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em>, <em>bins=None</em>, <em>log=False</em><big>)</big><a class="headerlink" href="#imapper.powerspectrum.xyz_to_rsphbins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform Cartesian grid (x,y,z) to spherically radial bins</p>
+</dd></dl>
+
+</div>
+<div class="section" id="viz-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">viz</span></tt> Module<a class="headerlink" href="#viz-module" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">imapper Package</a><ul>
+<li><a class="reference internal" href="#module-imapper.errorbars"><tt class="docutils literal"><span class="pre">errorbars</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.functions"><tt class="docutils literal"><span class="pre">functions</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.grid"><tt class="docutils literal"><span class="pre">grid</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.halolco"><tt class="docutils literal"><span class="pre">halolco</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.halolist"><tt class="docutils literal"><span class="pre">halolist</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.imapping"><tt class="docutils literal"><span class="pre">imapping</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.mapit"><tt class="docutils literal"><span class="pre">mapit</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.parameters"><tt class="docutils literal"><span class="pre">parameters</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.pencilbeam"><tt class="docutils literal"><span class="pre">pencilbeam</span></tt> Module</a></li>
+<li><a class="reference internal" href="#power-analytic-module"><tt class="docutils literal"><span class="pre">power_analytic</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-imapper.powerspectrum"><tt class="docutils literal"><span class="pre">powerspectrum</span></tt> Module</a></li>
+<li><a class="reference internal" href="#viz-module"><tt class="docutils literal"><span class="pre">viz</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/imapper.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">imapper 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Tony Li.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

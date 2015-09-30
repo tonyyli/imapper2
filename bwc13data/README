@@ -1,0 +1,5 @@
+File "sfr_release.dat" originally located at: "/nfs/slac/g/ki/ki03/tonyyli/sfh_z0_z8/release-sfh_z0_z8_052913/sfr/sfr_release.dat"
+
+Files in "posteriors" folder follow this convention:
+sfr/sfr_corrected_*.dat
+Average star formation rates as a function of halo mass and scale factor.  Halo masses are given in the filenames, and refer to a 0.2 dex bin in halo mass.  (I.e., sfr_corrected_11.0.dat is for halos from 10^11 Msun to 10^11.2 Msun).  Columns are: Scale factor, SFR, Err_Up, Err_Down (all linear units).

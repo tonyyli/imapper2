@@ -40,7 +40,7 @@ class HaloList(object):
 
         # Derived properties, to be calculated later
         object.__setattr__(self, 'sfr',  None)  # Star formation rate
-        object.__setattr__(self, 'lco',  None)  # CO luminosity
+        object.__setattr__(self, 'lum',  None)  # Line luminosity
         object.__setattr__(self, 'binidx',  None) # 1D (flattened) array of gridded bin indices
         
         object.__setattr__(self, 'sfr_base',  None)  # Star formation rate

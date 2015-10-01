@@ -65,34 +65,10 @@ imapper Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`pencilbeam` Module
-------------------------
-
-.. automodule:: pencilbeam
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`power_analytic` Module
-----------------------------
-
-.. automodule:: power_analytic
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`powerspectrum` Module
 ---------------------------
 
 .. automodule:: powerspectrum
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`viz` Module
------------------
-
-.. automodule:: viz
     :members:
     :undoc-members:
     :show-inheritance:

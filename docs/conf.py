@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # Mock modules (so that readthedocs can compile when modules import numpy, scipy, etc.)
 import mock
-MOCK_MODULES = ['numpy', 'scipy', 'scipy.interpolate', 'astropy', 'astropy.cosmology', 'astropy.units', 'astropy.constants', 'fftw3']
+MOCK_MODULES = ['numpy', 'scipy', 'scipy.interpolate', 'astropy', 'astropy.cosmology', 'astropy.units', 'astropy.constants', 'h5py']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 

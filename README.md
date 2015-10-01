@@ -27,10 +27,11 @@ Required Python modules:
 All parameters should be specified in a single parameter file.  The executable
 `mapit.py` takes the parameter file as an argument, generates mock intensity
 mapping data, and writes the data cube and other outputs to the location
-specified.  Command-line usage:
+specified.  For an example, navigate to the `example` folder and execute on the sample parameter file, like so:
 
 ```shell
-$ mapit.py /path/to/parameter_file.param
+$ cd example
+$ ../mapit.py example.cfg
 ```
 
 
@@ -82,6 +83,8 @@ x, y, z, t = [ data[k] for k in ('x', 'y', 'z', 't') ]
 
 - Spherically averaged (1D)
 - Cylindrically averaged (2D)
+
+[needs updating]
 
 
 # Additional details

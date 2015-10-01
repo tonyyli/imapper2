@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 
-"""
-    TESTING for using configparser module to load parameters (instead of own parameter file)
-"""
-
 # Standard modules
+import os.path
 import sys
-import argparse
+import shutil
 import time
 import logging
+import importlib
 
 # Modules within this package
 import functions as fn
 import parameters # Changed from "import parameters"
-import halolco
 import imapping
-import powerspectrum as pspec
+import kspace 
 import errorbars
 import grid
 
@@ -26,69 +23,54 @@ def main():
             format='%(asctime)s  %(message)s', 
             datefmt='%Y-%d-%m %I:%M:%S %p')
     
-    # Parse command line arguments
-    args = get_args() 
+    # Get parameters from the provided parameter file
+    param_file_path = sys.argv[1]
+    params = parameters.get_params(param_file_path)
 
-    # From each parameter file, calculate intensity maps + other outputs
-    for param_file_path in args.param_file:
-        t0 = time.time()
+    # From parameter file, calculate intensity map + other outputs
+    t0 = time.time()
 
-        # Get parameters from parameter file
-        params = parameters.get_params(param_file_path)
+    imgrid = get_grid(params) # Create the grid object that will contain the 3D brightness cube
+    halos = get_halos(params) # Load and pre-process halo data
 
-        # Create the grid on which brightness temperatures will be calculated
-        imgrid = get_imgrid(params) # NEW
-        
-        # Load and pre-process halo data
-        halos = get_halos(params)
+    halos.lum = get_lum(halos, params) # Calculate halo line luminosities
+    imgrid.tcube = get_tcube(halos, imgrid, params) # From halos, make brightness temperature cube
 
-        # Get halo SFRs, LCOs
+    ##################################################
+    
+    # Calculate power spectra from temperature cube
+    ksph, psph        = get_powersph(imgrid)
+    kprp, kpar, pcyl  = get_powercyl(imgrid)
+    
+    # Calculate error bars
+    errsph, noise_power, nmodes, fres = get_powersph_errorbars(ksph, psph, params)
+    # TODO: get cylindrical power spectrum error bars
 
-        halos.lco = get_lco(halos, params)
-        
-        # Convert halo L_COs to a temperature cube
-        imgrid.tcube = get_tcube(halos, imgrid, params)
+    ##################################################
+    
+    # Write temperature cube and other stuff to file
+    save_tcube(imgrid, params) 
+    save_powersph(ksph, psph, errsph, noise_power, nmodes, fres, params)
+    save_powercyl(kprp, kpar, pcyl, params)
+    save_paramfile(params) # Copy parameter file to output folder
+    
+    ##################################################
+    
+    # Summarize timing
+    t1 = time.time()
+    tpass = t1-t0
 
-        ##################################################
-        # Write temperature cube to file
-        xarr    = fn.bin_centers(imgrid.angfreqbins[0])
-        yarr    = fn.bin_centers(imgrid.angfreqbins[1])
-        zarr    = fn.bin_centers(imgrid.angfreqbins[2])
-        tcube   = imgrid.tcube
-        fn.save_cube(xarr, yarr, zarr, tcube, params)
-        
-        ##################################################
-        # Calculate power spectra from temperature cube
-        ksph, powsph        = get_powersph(imgrid)
-        kprp, kpar, powcyl  = get_powercyl(imgrid)
-        
-        # Calculate error bars
-        errsph, noise_power, nmodes, fres = get_powersph_errorbars(ksph, powsph, params)
-        # TODO: get cylindrical power spectrum error bars
-
-        # Save power spectrum (spherical 1D and cylindrical 2D)
-        fn.save_powersph(ksph, powsph, errsph, noise_power, nmodes, fres, params)
-        fn.save_powercyl(kprp, kpar, powcyl, params)
-        
-        ##################################################
-        # Save copy of parameter file to output folder
-        fn.save_paramfile(params)
-        
-        # Summarize timing
-        t1 = time.time()
-        
-        tpass = t1-t0
-        logging.info("Done!\n")
-
-        logging.info("Total time                        : {:.4f}\n".format(tpass))
+    logging.info("Done!")
+    logging.info("")
+    logging.info("Total time                        : {:.4f}\n".format(tpass))
 
 
-def get_imgrid(params):
+def get_grid(params):
     """Returns IMGrid object based on instrument and survey parameters"""
 
     # Get angular dimensions
-    fovlen = params['survey']['fovlen']
-    ares = params['instr']['angres'] # Units: arcmin
+    fovlen = params['obs']['fovlen']
+    ares = params['obs']['angres'] # Units: arcmin
     angrefine = params['angrefine']
         # Factor by which to refine angular resolution for final temperature map.
         # This a fudge parameter, introduced so that the final 2D intensity maps
@@ -98,9 +80,9 @@ def get_imgrid(params):
     dang   = ares / angrefine
 
     # Get frequency dimensions
-    nulo = params['instr']['nulo']    # Units: GHz
-    nuhi = params['instr']['nuhi']    # Units: GHz
-    dnu  = params['instr']['dnu']    # Units: GHz
+    nulo = params['obs']['nulo']    # Units: GHz
+    nuhi = params['obs']['nuhi']    # Units: GHz
+    dnu  = params['obs']['dnu']    # Units: GHz
     
     cosmo   = params['cosmo']
     nurest  = params['line_nu0']
@@ -112,133 +94,35 @@ def get_imgrid(params):
 
     return imgrid
 
+
 def get_halos(params):
-    """Returns HaloList object (with selection cuts applied, etc)"""
-    halos = fn.load_halos(params)
-    halos = fn.cut_halos(halos, params)
+    """Returns HaloList object
+    """
+    lc_path = params['io']['lightcone_path']
+    cosmo   = params['cosmo']
+    with_rsd = params['enable_rsd']
+
+    halos = fn.load_halos(lc_path, cosmo, with_rsd)
     return halos
 
 
-def get_lco(halos, params, reuse_sfr=False):
-    """Get Lco for all halos"""
+def get_lum(halos, params):
+    """Get line luminosities for all halos"""
 
-    ### HALOS TO SFR ###
-    logging.info("Assigning SFR to halos...")
-    model = params['halo_to_sfr']['model']
+    model_name = params['model']['name']
+    model_parameters = params['model']['parameters']
 
-    hm      = halos.m
-    hzcos   = halos.zcos
+    model = importlib.import_module('models.{:s}'.format(model_name)) # `model` is a custom module that defines a function "line_luminosity"
 
-    # Model: mean SFR(M,z) of Behroozi+13
-    if model == 'BWC13':
-        logging.info("  Using SFR(M) relation of Behroozi, Wechsler, Conroy 2013")
-        sfr = halolco.sfr_bwc13(hm, hzcos) # Behroozi, Wechsler, Conroy 2013
+    lum = model.line_luminosity(halos, **model_parameters)
 
-    # Model: -1sigma mean SFRs of Behroozi+13
-    elif model == 'BWC13_lo':
-        logging.info("  Using SFR(M) relation of Behroozi, Wechsler, Conroy 2013 using lower error bound")
-        sfr = halolco.sfr_bwc13(hm, hzcos, mode='lo')
-
-    # Model: +1sigma mean SFRs of Behroozi+13
-    elif model == 'BWC13_hi':
-        logging.info("  Using SFR(M) relation of Behroozi, Wechsler, Conroy 2013 using upper error bound")
-        sfr = halolco.sfr_bwc13(hm, hzcos, mode='hi')
-
-    # Model: Mean SFRs of Behroozi+13 with log scatter
-    elif model == 'BWC13_scatter':
-        logging.info("  Using SFR(M) relation of Behroozi, Wechsler, Conroy 2013 using halo-to-halo scatter within X dex")
-        dexscatter = params['halo_to_sfr']['dexscatter']
-        
-        if reuse_sfr: # If requested, reuse calculated 'base' SFR
-            if halos.sfr_base is not None:
-                sfr = halolco.logscatter(halos.sfr_base, dexscatter)
-            else:
-                halos.sfr_base = halolco.sfr_bwc13(hm, hzcos)
-                sfr = halolco.logscatter(halos.sfr_base, dexscatter)
-        
-        else: # Calculate scattered SFR 'from scratch'
-            sfr = halolco.sfr_bwc13_scatter(hm, hzcos, scatter=dexscatter, mode='dex')
-
-    # Model: Power law SFR(M)
-    elif model == 'powerlaw':
-        alpha = params['halo_to_sfr']['alpha']
-        norm = params['halo_to_sfr']['norm']
-        logging.info("  Using SFR(M) powerlaw relation: SFR = %.1e * M ^ %.2f" % (norm, alpha))
-        sfr = halolco.powerlaw(hm, alpha, norm)
-
-    elif model in ['righi08', 'visbal10', 'pullen13A', 'pullen13B', 'lidz11']:
-        # Skip the halo-to-sfr step (use SFR=M). The LCO-M normalization is absorbed into the sfr-lco step.
-        sfr = hm
-
-    elif model == 'constant':
-        sfr = np.ones(hm.size)
-    
-    halos.sfr = sfr
-    
-
-    ### SFR TO LCO ###
-    logging.info("Converting SFR to CO Luminosity...")
-
-    model = params['sfr_to_lco']['model']
-
-    sfr = halos.sfr
-
-    if model == 'powerlaw': # Simple power law, user-provided normalization and exponent
-        alpha   = params['sfr_to_lco']['alpha']
-        norm    = params['sfr_to_lco']['norm']
-        logging.info("  Using LCO(SFR) powerlaw relation: LCO = %.1e * SFR ^ %.2f" % (norm, alpha))
-        lco     = halolco.powerlaw(sfr, alpha, norm)
-
-    elif model == 'kennicutt_to_lirlco': # Kennicutt98 SFR-LIR relation, followed by LIR-LCO power law (e.g. Carilli+Walter13, S4.5)
-        logging.info("  Using LCO(SFR) relation derived from:")
-        logging.info("  -- Linear LIR-SFR scaling (Kennicutt 1998)")
-        logging.info("  -- LIR-LCO power law")
-
-        # Convert SFR to L_IR (Kennicutt 1998)
-        deltamf = params['sfr_to_lco']['deltamf']
-        lir     = halolco.sfr_to_lir(sfr, deltamf=deltamf)    # SFR in Msun/yr, LIR in Lsun
-        
-        # Convert L_IR to LCO' (S4.5, Carilli & Walter 2013)
-        alpha   = params['sfr_to_lco']['alpha']
-        beta    = params['sfr_to_lco']['beta']
-        lcop    = halolco.lir_to_lcoprime(lir, alpha=alpha, beta=beta) # LIR in Lsun, LCOprime in K km/s pc^2
-
-        # Covert LCO' to LCO (S2.4, Carilli & Walter 2013)
-        nurest  = params['line_nu0']
-        lco     = halolco.lprime_to_l(lcop, nurest)    # LCOprime in K km/s pc^2, LCO in Lsun
-
-    elif model == 'kennicutt_to_lirlco_scatter': # Power law between LCO and LIR with log scatter
-        deltamf = params['sfr_to_lco']['deltamf']
-        lir     = halolco.sfr_to_lir(sfr, deltamf=deltamf)    # SFR in Msun/yr, LIR in Lsun
-        
-        alpha   = params['sfr_to_lco']['alpha']
-        beta    = params['sfr_to_lco']['beta']
-        lcop    = halolco.lir_to_lcoprime(lir, alpha=alpha, beta=beta) # LIR in Lsun, LCOprime in K km/s pc^2
-
-        # Covert LCO' to LCO (S2.4, Carilli & Walter 2013)
-        nurest  = params['line_nu0']
-        lco     = halolco.lprime_to_l(lcop, nurest)    # LCO' in K km/s pc^2, LCO in Lsun
-
-        sigmalco = params['sfr_to_lco']['dexscatter']
-        lco     = halolco.logscatter(lco, sigmalco)
-
-
-    elif model in ['righi08', 'visbal10', 'pullen13A', 'pullen13B', 'lidz11']:
-        lco = getattr(halolco, model)(hm)
-
-    elif model == "constant":
-        lco = np.ones(sfr.size)
-
-    else:
-        raise Exception("  LCO(SFR) relation not recognized!")
-
-    return lco
+    return lum
 
 def get_tcube(halos, imgrid, params):
     logging.info("---------- GENERATING TEMPERATURE CUBE ----------")
     logging.info("=================================================")
 
-    # Get all needed quantities from objects that were passed into this method
+    ### Get all needed quantities from objects that were passed into this method
 
     # Get parameters
     cosmo   = params['cosmo']
@@ -246,41 +130,40 @@ def get_tcube(halos, imgrid, params):
     logging.info("Mapping line with rest frame frequency: %.1f GHz" % (nurest))
 
     # Get grid
-    angfreqbins = imgrid.angfreqbins    # Angular and frequency bins for the grid 
+    obins = imgrid.obins    # Angular and frequency bins for the grid 
 
     # Get halo properties
     hxa = halos.ra                  # halo x-coordinates, angular [arcmin]
     hya = halos.dec                 # halo y-coordinates, angular [arcmin]
     hzf = nurest/(halos.zlos+1.)    # halo z-coordinates, frequency [GHz]
-    hlco = halos.lco                # halo CO luminosities [Lsun]
+    hlum = halos.lum                # halo CO luminosities [Lsun]
     if halos.binidx is None:
-        halos.binidx = imapping.get_halo_cellidx(hxa, hya, hzf, angfreqbins) # cell indices (on final 3D intensity map) for each halo
+        halos.binidx = imapping.get_halo_cellidx(hxa, hya, hzf, obins) # cell indices (on final 3D intensity map) for each halo
     hbinidx = halos.binidx      # Halo bin indices
 
-    # We have everything we need. Now bin the halos and get the luminosity cube, then temperature cube...
-    lcube = imapping.lhalo_to_lcube(hxa, hya, hzf, hlco, angfreqbins, nurest, cosmo, hbinidx=hbinidx)
-    tcube = imapping.lcube_to_tcube(lcube, angfreqbins, nurest, cosmo)
+    ### We have everything we need. Now bin the halos and get the luminosity cube, then temperature cube...
+    lcube = imapping.lhalo_to_lcube(hxa, hya, hzf, hlum, obins, nurest, cosmo, hbinidx=hbinidx)
+    tcube = imapping.lcube_to_tcube(lcube, obins, nurest, cosmo)
     return tcube
+
 
 def get_powersph(imgrid):
     """Return k, P(k) for spherically averaged power spectrum"""
-    xc      = fn.bin_centers(imgrid.comovbins[0])
-    yc      = fn.bin_centers(imgrid.comovbins[1])
-    zc      = fn.bin_centers(imgrid.comovbins[2])
-    tcube   = imgrid.tcube
-    ksph, powsph = pspec.real_to_powsph(tcube, xc, yc, zc)
-    return ksph, powsph
+    xc, yc, zc  = imgrid.comoving_cell_centers()
+    tcube       = imgrid.tcube
+    ksph, psph  = kspace.real_to_powsph(tcube, xc, yc, zc)
+    return ksph, psph
+
 
 def get_powercyl(imgrid):
     """Return kprp, kpar, P(kprp, kpar) for cylindrically averaged power spectrum"""
-    xc      = fn.bin_centers(imgrid.comovbins[0])
-    yc      = fn.bin_centers(imgrid.comovbins[1])
-    zc      = fn.bin_centers(imgrid.comovbins[2])
-    tcube   = imgrid.tcube
-    kprp, kpar, powcyl = pspec.real_to_powcyl(tcube, xc, yc, zc)
-    return kprp, kpar, powcyl
+    xc, yc, zc  = imgrid.comoving_cell_centers()
+    tcube       = imgrid.tcube
+    kprp, kpar, pcyl = kspace.real_to_powcyl(tcube, xc, yc, zc)
+    return kprp, kpar, pcyl
 
-def get_powersph_errorbars(k, power, params):
+
+def get_powersph_errorbars(k, psph, params):
     """
     Calculate the error bars on spherically-averaged P(k) (1-sigma uncertainty) as a function of k.
 
@@ -290,38 +173,74 @@ def get_powersph_errorbars(k, power, params):
     ----------
     k : 1D array
         Values of k at which to calculate error bars on the power spectrum. [1/Mpc]
-    power : 1D array
+    psph : 1D array
         Autopower spectrum at the corresponding values of k.  Should be the same length as `k`. [uK^2 Mpc^3]
     """
     # Necessary parameters
-    tsys            = params['instr']['tsys']
-    dnu             = params['instr']['dnu']
-    nfeeds          = params['instr']['nfeeds']
-    dualpol         = params['instr']['dualpol']
-    tobs            = params['survey']['nhours']*3600.
-    fovlen          = params['survey']['fovlen']
-    fwhm            = params['instr']['angres']
-    nu_min          = params['instr']['nulo']
-    nu_max          = params['instr']['nuhi']
+    tsys            = params['obs']['tsys']
+    dnu             = params['obs']['dnu']
+    nfeeds          = params['obs']['nfeeds']
+    dualpol         = params['obs']['dualpol']
+    tobs            = params['obs']['nhours']*3600.
+    fovlen          = params['obs']['fovlen']
+    fwhm            = params['obs']['angres']
+    nu_min          = params['obs']['nulo']
+    nu_max          = params['obs']['nuhi']
     nu0             = params['line_nu0']
     cosmo           = params['cosmo']
     
     # Dual polarization doubles the number of effective feeds
     if dualpol: nfeeds *= 2
 
-    return errorbars.powersph_error(power, tsys, nfeeds, tobs, fovlen, fovlen, fwhm, nu_min, nu_max, dnu, nu0, k, cosmo)
+    return errorbars.powersph_error(psph, tsys, nfeeds, tobs, fovlen, fovlen, fwhm, nu_min, nu_max, dnu, nu0, k, cosmo)
 
 
-def get_args():
-    parser = argparse.ArgumentParser(description="Command line script to get intensity maps")
+def save_tcube(imgrid, params):
+    if params['io']['save_tcube'] == False:
+        logging.info("Note: Not saving data cube")
+        return
 
-    parser.add_argument("-i", action="store_true",
-                        help="Interactive: prompt to confirm all parameter values")
-    parser.add_argument("param_file", nargs="+",
-                        help="Parameter file")
-    return parser.parse_args()
+    outdir  = params['io']['output_folder']
+    fname   = params['io']['fname_tcube']
+    fpath   = os.path.join(outdir, fname)
+    
+    xo, yo, zo  = imgrid.observed_cell_centers()
+    tcube       = imgrid.tcube
+
+    fn.save_cube(fpath, xo, yo, zo, tcube)
+
+
+def save_powersph(ksph, psph, errsph, noise_power, nmodes, fres, params):
+    try:
+        fpath = "%s/%s.dat" % (params['io']['output_folder'], params['io']['fname_powerspectrum'])
+    except KeyError:
+        fpath = "%s/pspec.dat" % (params['io']['output_folder'])
+
+    fn.save_powersph(fpath, ksph, psph, errsph, noise_power, nmodes, fres)
+
+
+def save_powercyl(kprp, kpar, pcyl, params):
+    fpath = "%s/%s_cyl.npz" % (params['io']['output_folder'], params['io']['fname_powerspectrum'])
+
+    fn.save_powercyl(fpath, kprp, kpar, pcyl)
+
+
+def save_paramfile(params):
+    fp_in    = params['io']['param_file_path']
+
+    outdir    = params['io']['output_folder']
+    fname    = os.path.basename(fp_in)
+    fp_out    = os.path.join(outdir, fname)
+
+    logging.info("Copying parameter file...")
+    logging.info("  FROM : {}".format(fp_in))
+    logging.info("    TO : {}".format(fp_out))
+    logging.info("")
+    
+    shutil.copyfile(fp_in, fp_out)
+
 
 if __name__=="__main__":
     main()
 else:
-    print "Note: `mapit` module not being run as main executable."
+    logging.info("Note: `mapit` module not being run as main executable.")

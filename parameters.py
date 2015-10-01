@@ -4,34 +4,13 @@ import logging
 import pprint
 import astropy.cosmology as ac
 
-# OLD: without configparser
-# def get_params(filepath, verbose=True):
-#     """
-#     Get parameter values and return them in the form of a dictionary.
-# 
-#     Parameters
-#     ----------
-#     filepath : str
-#         path to parameter file
-#     """
-#     params      = None
-#     raw_params  = _parse_paramfile(filepath)
-#     check_deprecated(raw_params)
-#     params      = _reorganize_params(raw_params)
-# 
-#     logging.info("---------- PARAMETER VALUES ----------")
-#     logging.info("======================================")
-#     logging.info("\n" + pprint.pformat(params, indent=4) + "\n")
-#     
-#     return params
-
-def get_params(filepath):
+def get_params(param_file_path):
     """
     Get parameter values and return them in the form of a dictionary.
 
     Parameters
     ----------
-    filepath : str
+    param_file_path : str
         path to parameter file
 
     Returns
@@ -40,21 +19,22 @@ def get_params(filepath):
     """
 
     config = ConfigParser.SafeConfigParser()
-    config.read(filepath)
+    config.read(param_file_path)
 
     # Get "raw" dictionaries from `config` object
-    raw_params = dict(config.items('test_header')) # Currently assuming 'test_header' is the only section header
-    raw_params['param_file_path'] = os.path.abspath(filepath) # Store parameter file path
-    raw_halotosfr_params = dict(config.items('halo_to_sfr'))
-    raw_sfrtolco_params = dict(config.items('sfr_to_lco'))
-    raw_instr_params = dict(config.items('instr'))
-    raw_survey_params = dict(config.items('survey'))
+    raw_params = dict(config.items('general'))
+    raw_io_params = dict(config.items('io'))
+    raw_cosmo_params = dict(config.items('cosmology'))
+    raw_model_params = dict(config.items('model'))
+    raw_obs_params = dict(config.items('observing'))
 
-    params = _reorganize_general_params(raw_params) # Convert "raw" config dictionary to "organized" dictionary `params`
-    params['halo_to_sfr'] = _reorganize_halotosfr_params(raw_halotosfr_params)
-    params['sfr_to_lco'] = _reorganize_sfrtolco_params(raw_sfrtolco_params)
-    params['instr'] = get_instrument_parameters(raw_instr_params)
-    params['survey'] = get_survey_parameters(raw_survey_params)
+    raw_io_params['param_file_path'] = os.path.abspath(param_file_path) # Store parameter file path
+    
+    params = get_general_params(raw_params) # Convert "raw" config dictionary to "organized" dictionary `params`
+    params['io'] = get_io_parameters(raw_io_params)
+    params['cosmo'] = get_cosmology_parameters(raw_cosmo_params)
+    params['model'] = get_model_parameters(raw_model_params)
+    params['obs'] = get_observing_parameters(raw_obs_params)
     
     logging.info("---------- PARAMETER VALUES ----------")
     logging.info("======================================")
@@ -62,100 +42,41 @@ def get_params(filepath):
 
     return params
 
+def get_io_parameters(raw_params):
+    io = {}
+    
+    io['lightcone_path'] = raw_params['lightcone_path']
 
-# def _parse_paramfile(fp):
-#     """
-#     Parse any parameter file, and return a dictionary.
-# 
-#     Any line in the file of the form
-#         "key : value"
-#     results in a dictionary entry of the form
-#         raw_params['key'] = 'value'
-#     """
-#     raw_params = {}                                        # Initialize parameter dictionary
-#     raw_params['param_file_path'] = os.path.abspath(fp) # Store parameter file path
-# 
-#     with open(fp) as f:
-#         for line in f:
-#             # Skip line if it's (1) empty or (2) a comment
-#             if len(line.strip())==0:
-#                 continue
-#             elif line.lstrip()[0]=='#':
-#                 continue
-# 
-#             line = line.split('#')[0] # Remove comments from end of line (if applicable)
-#             tokens = line.split(':', 1)
-# 
-#             # If line is not properly formatted as a token, skip it
-#             if len(tokens) < 2:
-#                 continue
-# 
-#             tokens = [t.strip() for t in tokens]
-#             key, val = tokens
-#             raw_params[key] = val
-#             
-#     return raw_params
-
-def _reorganize_halotosfr_params(raw_params):
-    ### HALO TO SFR
-    halo_to_sfr = {}
-    halo_to_sfr['model'] = raw_params['model']
-    if raw_params['model'] == 'BWC13_scatter':
-        if 'dexscatter' in raw_params:
-            halo_to_sfr['dexscatter'] = float(raw_params['dexscatter'])
-    elif raw_params['model'] == 'powerlaw':
-        halo_to_sfr['alpha']     = float(raw_params['powerlaw_alpha'])
-        halo_to_sfr['norm']      = float(raw_params['powerlaw_norm'])
-    return halo_to_sfr
-
-
-def _reorganize_sfrtolco_params(raw_params):
-    ### sfr TO LCO
-    sfr_to_lco = {}
-    sfr_to_lco['model'] = raw_params['model']
-    if raw_params['model'] == 'powerlaw':
-        sfr_to_lco['alpha']     = float(raw_params['powerlaw_alpha'])
-        sfr_to_lco['norm']      = float(raw_params['powerlaw_norm'])
-    elif raw_params['model'] == 'kennicutt_to_lirlco':
-        sfr_to_lco['alpha']     = float(raw_params['alpha'])
-        sfr_to_lco['beta']      = float(raw_params['beta'])
-        sfr_to_lco['deltamf']   = float(raw_params['deltamf'])
-    elif raw_params['model'] == 'kennicutt_to_lirlco_scatter':
-        sfr_to_lco['dexscatter']= float(raw_params['dexscatter'])
-        sfr_to_lco['alpha']     = float(raw_params['alpha'])
-        sfr_to_lco['beta']      = float(raw_params['beta'])
-        sfr_to_lco['deltamf']   = float(raw_params['deltamf'])
-    elif raw_params['model'] == 'shortcut1':
-        sfr_to_lco['dexscatter']= float(raw_params['dexscatter'])
-        sfr_to_lco['alpha']     = float(raw_params['alpha'])
-        sfr_to_lco['beta']      = float(raw_params['beta'])
-        sfr_to_lco['deltamf']   = float(raw_params['deltamf'])
-    return sfr_to_lco
-
-
-def _reorganize_general_params(raw_params):
-    """
-    Reorganize parameters into a structured, nested format for easy use with intensity mapping code
-    """
-    params = {} # Initialize parameter dictionary
-
-    ### LIGHTCONE HALO DATA
-    params['lightcone_path'] = raw_params['lightcone_path']
-
-    ### OUTPUT
-    params['output_folder']         = raw_params['output_folder']
-    params['fname_tcube']           = raw_params['fname_tcube']
-    params['fname_powerspectrum']   = raw_params['fname_powerspectrum']
-    params['param_file_path']       = raw_params['param_file_path']
+    io['output_folder']         = raw_params['output_folder']
+    io['fname_tcube']           = raw_params['fname_tcube']
+    io['fname_powerspectrum']   = raw_params['fname_powerspectrum']
     try:
-        params['save_tcube']        = is_true(raw_params, 'save_tcube')
+        io['save_tcube']        = is_true(raw_params, 'save_tcube')
     except KeyError:
-        params['save_tcube']        = True
+        io['save_tcube']        = True
 
-    ### COSMOLOGY
-    cosmo       = get_cosmology_parameters(raw_params)
-    params['cosmo']         = cosmo
+    io['param_file_path']       = raw_params['param_file_path']
+    
+    return io
 
+
+def get_model_parameters(raw_params):
+    model = {}
+    model_parameters = {}
+
+    for k in raw_params.keys():
+        if k == 'model':
+            model['name'] = raw_params[k]
+        else:
+            model_parameters[k] = float(raw_params[k])
+
+    model['parameters'] = model_parameters
+    return model
+
+
+def get_general_params(raw_params):
+    params = {} # Initialize parameter dictionary
+    
     ### MISC
     params['line_nu0']      = float(raw_params['line_nu0'])
 
@@ -194,24 +115,8 @@ def _reorganize_general_params(raw_params):
     except KeyError:
         pass
 
-
     return params
 
-def validate_params(params):
-    """
-    Validate parameters and correct if necessary.
-    """
-
-    # TODO: Check that all required parameters are present
-    # TODO: Check that all present parameters are valid
-    # TODO: If interactive:
-    # - prompt to fill/replace missing/invalid values
-    # - prompt to overwrite original paramfile or save separate version
-
-    pass
-
-
-### TODO: Getter methods (raw parameter dictionary as input) ###
 
 def get_cosmology_parameters(raw_params):
     """
@@ -220,74 +125,39 @@ def get_cosmology_parameters(raw_params):
     cosmo : astropy.cosmology object
         object containing cosmological parameters
     """
-    omega_m0    = float(raw_params['cosmo_omega_m'])    # Present-day matter density
-    omega_l0    = float(raw_params['cosmo_omega_l'])    # Present-day dark energy density
-    omega_k0    = float(raw_params['cosmo_omega_k'])    # Present-day spatial curvature density
-    hubble_h0   = float(raw_params['cosmo_h'])          # Present-day reduced Hubble constant: h0 = H0 / (100 km/s/Mpc)
+    omega_m0    = float(raw_params['omega_m'])    # Present-day matter density
+    omega_l0    = float(raw_params['omega_l'])    # Present-day dark energy density
+    omega_k0    = float(raw_params['omega_k'])    # Present-day spatial curvature density
+    hubble_h0   = float(raw_params['h'])          # Present-day reduced Hubble constant: h0 = H0 / (100 km/s/Mpc)
 
     H0          = hubble_h0*100.
     cosmo       = ac.LambdaCDM(H0=H0, Om0=omega_m0, Ode0=omega_l0)
     
     return cosmo
 
-def get_instrument_parameters(raw_params):
+
+def get_observing_parameters(raw_params):
     """
     Returns
     -------
-    instr : dict
-        instrument parameters
+    obs : dict
+        observing parameters
     """
-    instr = {}
+    obs = {}
 
-    # If `preset` name is specified, ignore all other parameters and load preset values
-    try:
-        preset_name = raw_params['preset']
-        preset_fp = "{}/parameters/preset/{}.param".format(os.path.dirname(os.path.realpath(__file__)), preset_name)
-        preset_params = _parse_paramfile(preset_fp)
-        instr['tsys']       = float(preset_params['tsys'])
-        instr['angres']     = float(preset_params['angres'])
-        instr['dnu']        = float(preset_params['dnu'])
-        instr['nulo']       = float(preset_params['nulo'])
-        instr['nuhi']       = float(preset_params['nuhi'])
-        instr['nfeeds']     = int(preset_params['nfeeds'])
-        instr['dualpol']    = is_true(preset_params, 'dualpol')
-    except KeyError:
-        instr['tsys']       = float(raw_params['tsys'])
-        instr['angres']     = float(raw_params['angres'])
-        instr['dnu']        = float(raw_params['dnu'])
-        instr['nulo']       = float(raw_params['nulo'])
-        instr['nuhi']       = float(raw_params['nuhi'])
-        instr['nfeeds']     = int(raw_params['nfeeds'])
-        instr['dualpol']    = is_true(raw_params, 'dualpol')
+    obs['tsys']       = float(raw_params['tsys'])
+    obs['angres']     = float(raw_params['angres'])
+    obs['dnu']        = float(raw_params['dnu'])
+    obs['nulo']       = float(raw_params['nulo'])
+    obs['nuhi']       = float(raw_params['nuhi'])
+    obs['nfeeds']     = int(raw_params['nfeeds'])
+    obs['dualpol']    = is_true(raw_params, 'dualpol')
 
-    return instr
-
-
-def get_survey_parameters(raw_params):
-    """
-    Returns
-    -------
-    survey : dict
-        survey parameters
-    """
-    survey = {}
+    obs['fovlen'] = float(raw_params['fovlen'])
+    obs['nhours'] = float(raw_params['nhours'])
     
-    # If `preset` name is specified, ignore all other parameters and load preset values
-    try:
-        preset_name = raw_params['preset']
-        preset_fp = "{}/parameters/preset/{}.param".format(os.path.dirname(os.path.realpath(__file__)), preset_name)
-        preset_params = _parse_paramfile(preset_fp)
-        survey['fovlen'] = float(preset_params['fovlen'])
-        survey['nhours'] = float(preset_params['nhours'])
-    except KeyError:
-        survey['fovlen'] = float(raw_params['fovlen'])
-        survey['nhours'] = float(raw_params['nhours'])
+    return obs
 
-    return survey
-
-def get_tsys(raw_params):
-    # TODO: Unfinished
-    pass
 
 def is_true(raw_params, key):
     """Is raw_params[key] true? Returns boolean value.
@@ -306,12 +176,6 @@ def is_true(raw_params, key):
         logging.warning("Input not recognized for parameter: %s" % (key))
         logging.warning("You provided: %s" % (sraw))
         raise
-
-def check_deprecated(raw_params):
-    if 'line_j' in raw_params:
-        logging.warning("`line_j` for CO lines is deprecated. Specify the exact rest-frame frequency in `line_nu0`.")
-        if int(raw_params['line_j']) != 1:
-            logging.warning("`line_j` is not 1, intensity map may not be properly calculated")
 
 
 ### FOR TESTING ###

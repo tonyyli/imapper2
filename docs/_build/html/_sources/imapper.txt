@@ -4,7 +4,7 @@ imapper Package
 :mod:`errorbars` Module
 -----------------------
 
-.. automodule:: imapper.errorbars
+.. automodule:: errorbars
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ imapper Package
 :mod:`functions` Module
 -----------------------
 
-.. automodule:: imapper.functions
+.. automodule:: functions
     :members:
     :undoc-members:
     :show-inheritance:
@@ -20,7 +20,7 @@ imapper Package
 :mod:`grid` Module
 ------------------
 
-.. automodule:: imapper.grid
+.. automodule:: grid
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,7 +28,7 @@ imapper Package
 :mod:`halolco` Module
 ---------------------
 
-.. automodule:: imapper.halolco
+.. automodule:: halolco
     :members:
     :undoc-members:
     :show-inheritance:
@@ -36,7 +36,7 @@ imapper Package
 :mod:`halolist` Module
 ----------------------
 
-.. automodule:: imapper.halolist
+.. automodule:: halolist
     :members:
     :undoc-members:
     :show-inheritance:
@@ -44,7 +44,7 @@ imapper Package
 :mod:`imapping` Module
 ----------------------
 
-.. automodule:: imapper.imapping
+.. automodule:: imapping
     :members:
     :undoc-members:
     :show-inheritance:
@@ -52,7 +52,7 @@ imapper Package
 :mod:`mapit` Module
 -------------------
 
-.. automodule:: imapper.mapit
+.. automodule:: mapit
     :members:
     :undoc-members:
     :show-inheritance:
@@ -60,23 +60,7 @@ imapper Package
 :mod:`parameters` Module
 ------------------------
 
-.. automodule:: imapper.parameters
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`pencilbeam` Module
-------------------------
-
-.. automodule:: imapper.pencilbeam
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`power_analytic` Module
-----------------------------
-
-.. automodule:: imapper.power_analytic
+.. automodule:: parameters
     :members:
     :undoc-members:
     :show-inheritance:
@@ -84,15 +68,7 @@ imapper Package
 :mod:`powerspectrum` Module
 ---------------------------
 
-.. automodule:: imapper.powerspectrum
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`viz` Module
------------------
-
-.. automodule:: imapper.viz
+.. automodule:: powerspectrum
     :members:
     :undoc-members:
     :show-inheritance:

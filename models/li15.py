@@ -6,7 +6,7 @@ import os
 import numpy as np
 import scipy.interpolate
 
-def line_luminosity(halos, sigma_sfr=0.3, log_delta_mf=0.0, alpha=1.37, beta=-1.74, sigma_lco=0.3, min_mass=1e10):
+def line_luminosity(halos, sigma_sfr=0.3, delta_mf=1.0, alpha=1.37, beta=-1.74, sigma_lco=0.3, min_mass=1e10):
     """
     Parameters
     halos : HaloList object
@@ -41,13 +41,16 @@ def line_luminosity(halos, sigma_sfr=0.3, log_delta_mf=0.0, alpha=1.37, beta=-1.
     sfr  = rbv.ev(np.log10(hm), np.log10(hz+1.))
 
     halos.sfr = sfr
-    logsfr = np.log10(sfr)
     
     ### SFR to LCO ###
-    loglir  = logsfr + 10. - log_delta_mf
-    loglcop = (loglir - beta) / alpha # units of K km/s pc^2
-    loglco = loglcop - 10.52 + 3*np.log10(line_freq) # units of Lsun
+    lir  = sfr * 1e10 / delta_mf
 
-    lco = np.where(hm >= min_mass, 10**loglco, 0.) # Set all halos below minimum halo mass to have 0 luminosity
+    alphainv = 1./alpha
+    lcop = lir**alphainv * 10**(-beta * alphainv)
+    
+    lco = np.where(
+            hm >= min_mass, 
+            3e-11 * line_freq**3 * lcop, 
+            0. ) # Set all halos below minimum halo mass to have 0 luminosity
 
     return lco

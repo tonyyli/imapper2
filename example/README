@@ -1,3 +1,6 @@
-from chinchilla-400 simulation
-z = 2.3 - 2.7
-60 arcmin x 60 arcmin
+Execute `testit` inside this folder
+
+Notes:
+- halos from ch400 simulation
+- z = 2.3 - 2.7
+- 60 arcmin x 60 arcmin

@@ -1,3 +1,9 @@
+"""
+    Script for quickly visualizing 3D brightness temperature cubes.  Requires PyQt4(?).
+    
+    Author: Dongwoo Chung
+"""
+
 import argparse
 import numpy as np
 from pyqtgraph.Qt import QtCore, QtGui

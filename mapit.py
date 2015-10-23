@@ -149,17 +149,17 @@ def get_tcube(halos, imgrid, params):
 
 def get_powersph(imgrid):
     """Return k, P(k) for spherically averaged power spectrum"""
-    xc, yc, zc  = imgrid.comoving_cell_centers()
+    xyz         = imgrid.comoving_cell_centers()
     tcube       = imgrid.tcube
-    ksph, psph  = kspace.real_to_powsph(tcube, xc, yc, zc)
+    ksph, psph  = kspace.real_to_powsph(tcube, xyz)
     return ksph, psph
 
 
 def get_powercyl(imgrid):
     """Return kprp, kpar, P(kprp, kpar) for cylindrically averaged power spectrum"""
-    xc, yc, zc  = imgrid.comoving_cell_centers()
+    xyz         = imgrid.comoving_cell_centers()
     tcube       = imgrid.tcube
-    kprp, kpar, pcyl = kspace.real_to_powcyl(tcube, xc, yc, zc)
+    kprp, kpar, pcyl = kspace.real_to_powcyl(tcube, xyz)
     return kprp, kpar, pcyl
 
 

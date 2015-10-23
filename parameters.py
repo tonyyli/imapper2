@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import os
 import logging
 import pprint
@@ -18,7 +18,7 @@ def get_params(param_file_path):
     params : dict
     """
 
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.ConfigParser(inline_comment_prefixes=(';',))
     config.read(param_file_path)
 
     # Get "raw" dictionaries from `config` object

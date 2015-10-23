@@ -9,13 +9,13 @@ from scipy import interpolate
     Functions for k-space (power spectrum) calculations
 """
 
-def real_to_powsph(func, x, y, z):
+def real_to_powsph(f, xyz):
     """
     Convert real function to a spherically averaged power spectrum, P(k).
 
     Parameters
     ----------
-    func : float 3D array
+    f : float 3D array
         values of function on 3D grid
     x : float 1D array
     y : float 1D array
@@ -28,19 +28,19 @@ def real_to_powsph(func, x, y, z):
     psph : float 1D array
         spherically averaged power spectrum, P(k)
     """
-    dfunc       = func - np.mean(func) # Subtract the mean (k=0 mode)
-    p, kx,ky,kz = real_to_pow3d(dfunc, x, y, z)
+    df       = f - np.mean(f) # Subtract the mean (k=0 mode)
+    p, kx,ky,kz = real_to_pow3d(df, xyz)
     k, psph     = f3d_to_fsphavg(p, kx, ky, kz)
 
     return k, psph
 
 
-def real_to_powcyl(func, x, y, z):
+def real_to_powcyl(f, xyz):
     """Convert a real 3d function to cylindrically averaged power spectru, P(kpar, kprp).
 
     Parameters
     ----------
-    func :
+    f :
     x :
     y :
     z :
@@ -53,21 +53,21 @@ def real_to_powcyl(func, x, y, z):
         parallel component of k (i.e. z)
     pcyl :
     """
-    dfunc       = func - np.mean(func) # Subtract the mean (k=0 mode)
-    p, kx,ky,kz = real_to_pow3d(dfunc, x, y, z)
+    df       = f - np.mean(f) # Subtract the mean (k=0 mode)
+    p, kx,ky,kz = real_to_pow3d(df, xyz)
     kprp, kpar, pcyl = f3d_to_fcylavg(p, kx, ky, kz)
 
     return kprp, kpar, pcyl
 
 
-def real_to_xpowsph(f1, f2, x, y, z):
+def real_to_xpowsph(f1, f2, xyz):
     """
     Convert 2 intensity maps to a spherically averaged cross power spectrum, P(k)
     """
     df1 = f1 - np.mean(f1) # Subtract 0th order (constant) mode
     df2 = f2 - np.mean(f2) # Subtract 0th order (constant) mode
 
-    power, kx, ky, kz   = real_to_xpow3d(df1, df2, x, y, z)
+    power, kx, ky, kz   = real_to_xpow3d(df1, df2, xyz)
     power = np.real(power) # Throw away imaginary components, because they'll spherically average out to 0 (assuming f1 and f2 are real-valued)
 
     k, powersph = f3d_to_fsphavg(power, kx, ky, kz)
@@ -75,11 +75,11 @@ def real_to_xpowsph(f1, f2, x, y, z):
     return k, powersph
 
 
-def real_to_xpowcyl(f1, f2, x, y, z):
+def real_to_xpowcyl(f1, f2, xyz):
     df1 = f1 - np.mean(f1) # Subtract 0th order (constant) mode
     df2 = f2 - np.mean(f2) # Subtract 0th order (constant) mode
 
-    power, kx, ky, kz   = real_to_xpow3d(df1, df2, x, y, z)
+    power, kx, ky, kz   = real_to_xpow3d(df1, df2, xyz)
     power = np.real(power) # Throw away imaginary components, because they'll spherically average out to 0 (assuming f1 and f2 are real-valued)
 
     kprp, kpar, pcyl = f3d_to_fcylavg(power, kx, ky, kz)
@@ -87,13 +87,15 @@ def real_to_xpowcyl(f1, f2, x, y, z):
     return kprp, kpar, pcyl
 
 
-def real_to_pow3d(func, x, y, z):
+def real_to_pow3d(f, xyz):
     """
     Calculate a 3D power spectrum, given:
     -- a function defined on a 3D grid of evenly-spaced (x,y,z) points
     -- a 1D array of the sampled points in each dimension (x,y,z)
     """
-    ftrans, kx, ky, kz  = real_to_fourier(func, x, y, z)
+    x, y, z = xyz
+
+    ftrans, kx, ky, kz  = real_to_fourier(f, x, y, z)
     
     # "Power spectrum" = power spectral density = |FT|^2 / volume
     vol = np.abs( (x[-1]-x[0])*(y[-1]-y[0])*(z[-1]-z[0]) ) # Total volume
@@ -102,12 +104,13 @@ def real_to_pow3d(func, x, y, z):
     return pow, kx, ky, kz
 
 
-def real_to_xpow3d(f1, f2, x, y, z):
+def real_to_xpow3d(f1, f2, xyz):
     """
     Calculate a 3D cross power spectrum, given:
     -- two functions defined on a 3D grid of evenly-spaced (x,y,z) points
     -- a 1D array of the sampled points in each dimension (x,y,z)
     """
+    x, y, z = xyz
 
     ftrans1, kx, ky, kz    = real_to_fourier(f1, x, y, z)
     ftrans2, kx, ky, kz    = real_to_fourier(f2, x, y, z)
@@ -118,7 +121,7 @@ def real_to_xpow3d(f1, f2, x, y, z):
     return xpow, kx, ky, kz
 
 
-def real_to_fourier(func, x, y, z):
+def real_to_fourier(f, x, y, z):
     # Check that real-space grid spacing is all equal
     if not (_is_evenly_spaced(x) and _is_evenly_spaced(y) and _is_evenly_spaced(z)):
         raise ValueError('Sample points in real space are not evenly spaced.')
@@ -126,7 +129,7 @@ def real_to_fourier(func, x, y, z):
     dy = y[1]-y[0]
     dz = z[1]-z[0]
 
-    ftrans  = ft.rfftn(func)
+    ftrans  = ft.rfftn(f)
 
     # Wavenumber arrays
     kx        = 2*np.pi * ft.fftfreq(x.size, d=dx)
@@ -139,7 +142,7 @@ def real_to_fourier(func, x, y, z):
     return ftrans, kx, ky, kz
 
 
-def f3d_to_fsphavg(func, x, y, z, bins=None, log=False):
+def f3d_to_fsphavg(f, x, y, z, bins=None, log=False):
     """
     Spherically average a function initially defined on a 3d grid
     """
@@ -148,18 +151,18 @@ def f3d_to_fsphavg(func, x, y, z, bins=None, log=False):
 
     rr      = np.sqrt( sum(xx**2 for xx in np.meshgrid(x,y,z, indexing='ij')) )        # 3d grid of r (distance from origin)
     gt0     = rr > 0 # selection for r>0 (do not include origin)
-    fofr    = np.histogram(rr[gt0], bins=rsphbins, weights=func[gt0])[0] / np.histogram(rr[gt0], bins=rsphbins)[0]
+    fofr    = np.histogram(rr[gt0], bins=rsphbins, weights=f[gt0])[0] / np.histogram(rr[gt0], bins=rsphbins)[0]
     rmid    = _bin_midpoints(rsphbins)
 
     return rmid, fofr
 
 
-def f3d_to_fcylavg(func, x, y, z, bins=None, log=False):
+def f3d_to_fcylavg(f, x, y, z, bins=None, log=False):
     """Cylindrically average a function defined on a 3D grid
 
     Parameters
     ----------
-    func :
+    f :
     x :
     y :
     z :
@@ -182,7 +185,7 @@ def f3d_to_fcylavg(func, x, y, z, bins=None, log=False):
     xx,yy,zz = np.meshgrid(x, y, z, indexing='ij')
     rr  = np.sqrt( xx**2 + yy**2 )                                  # 3D grid of r (cylindrical radius from origin)
     nn  = np.histogram2d(rr.ravel(), zz.ravel(), bins=rcylbins)[0]  # Number of cells used to compute average
-    favg= np.histogram2d(rr.ravel(), zz.ravel(), bins=rcylbins, weights=func.ravel())[0] / nn
+    favg= np.histogram2d(rr.ravel(), zz.ravel(), bins=rcylbins, weights=f.ravel())[0] / nn
 
     rmid_prp    = _bin_midpoints(rcylbins[0])
     rmid_par    = _bin_midpoints(rcylbins[1])

@@ -11,22 +11,21 @@ from scipy import interpolate
 
 def real_to_powsph(f, xyz):
     """
-    Convert real function to a spherically averaged power spectrum, P(k).
+    Convert real-valued 3D scalar field to a spherically averaged power spectrum, P(k).
 
     Parameters
     ----------
-    f : float 3D array
-        values of function on 3D grid
-    x : float 1D array
-    y : float 1D array
-    z : float 1D array
-
+    f : array of float
+        Values of function on 3D grid
+    xyz : tuple of arrays
+        1D Cartesian arrays of the x, y, and z points of the 3D grid 
+        
     Returns
     -------
-    k : float 1D array
-        radius in k-space
-    psph : float 1D array
-        spherically averaged power spectrum, P(k)
+    k : array of float
+        Radial points in k-space
+    psph : array of float
+        Spherically averaged power spectrum, P(k)
     """
     df       = _subtract_mean(f)
     p, kx,ky,kz = real_to_pow3d(df, xyz)
@@ -88,8 +87,7 @@ def real_to_xpowcyl(f1, f2, xyz):
 
 
 def real_to_pow3d(f, xyz):
-    """
-    Calculate a 3D power spectrum, given:
+    """Calculate a 3D power spectrum, given:
     -- a function defined on a 3D grid of evenly-spaced (x,y,z) points
     -- a 1D array of the sampled points in each dimension (x,y,z)
     """
@@ -99,14 +97,13 @@ def real_to_pow3d(f, xyz):
     
     # "Power spectrum" = power spectral density = |FT|^2 / volume
     vol = np.abs( (x[-1]-x[0])*(y[-1]-y[0])*(z[-1]-z[0]) ) # Total volume
-    pow = np.abs(ftrans)**2./vol 
+    power = np.abs(ftrans)**2./vol 
     
-    return pow, kx, ky, kz
+    return power, kx, ky, kz
 
 
 def real_to_xpow3d(f1, f2, xyz):
-    """
-    Calculate a 3D cross power spectrum, given:
+    """Calculate a 3D cross power spectrum, given:
     -- two functions defined on a 3D grid of evenly-spaced (x,y,z) points
     -- a 1D array of the sampled points in each dimension (x,y,z)
     """
@@ -116,9 +113,9 @@ def real_to_xpow3d(f1, f2, xyz):
     ftrans2, kx, ky, kz    = real_to_fourier(f2, x, y, z)
     
     vol             = np.abs( (x[-1]-x[0])*(y[-1]-y[0])*(z[-1]-z[0]) ) # Volume
-    xpow            = ftrans1 * np.conj(ftrans2) / vol # "Power spectrum" is power spectral density: |FT|^2 / volume
+    xpower          = ftrans1 * np.conj(ftrans2) / vol # "Power spectrum" is power spectral density: |FT|^2 / volume
 
-    return xpow, kx, ky, kz
+    return xpower, kx, ky, kz
 
 
 def real_to_fourier(f, x, y, z):

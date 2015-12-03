@@ -28,7 +28,7 @@ def real_to_powsph(f, xyz):
     psph : float 1D array
         spherically averaged power spectrum, P(k)
     """
-    df       = f - np.mean(f) # Subtract the mean (k=0 mode)
+    df       = _subtract_mean(f)
     p, kx,ky,kz = real_to_pow3d(df, xyz)
     k, psph     = f3d_to_fsphavg(p, kx, ky, kz)
 
@@ -36,7 +36,7 @@ def real_to_powsph(f, xyz):
 
 
 def real_to_powcyl(f, xyz):
-    """Convert a real 3d function to cylindrically averaged power spectru, P(kpar, kprp).
+    """Convert a real 3d function to cylindrically averaged power spectrum, P(ks, kpar).
 
     Parameters
     ----------
@@ -47,25 +47,25 @@ def real_to_powcyl(f, xyz):
 
     Returns
     -------
-    kprp :
+    ks :
         perpendicular component of k (i.e. x and y)
     kpar :
         parallel component of k (i.e. z)
     pcyl :
     """
-    df       = f - np.mean(f) # Subtract the mean (k=0 mode)
+    df       = _subtract_mean(f)
     p, kx,ky,kz = real_to_pow3d(df, xyz)
-    kprp, kpar, pcyl = f3d_to_fcylavg(p, kx, ky, kz)
+    ks, kpar, pcyl = f3d_to_fcylavg(p, kx, ky, kz)
 
-    return kprp, kpar, pcyl
+    return ks, kpar, pcyl
 
 
 def real_to_xpowsph(f1, f2, xyz):
     """
     Convert 2 intensity maps to a spherically averaged cross power spectrum, P(k)
     """
-    df1 = f1 - np.mean(f1) # Subtract 0th order (constant) mode
-    df2 = f2 - np.mean(f2) # Subtract 0th order (constant) mode
+    df1 = _subtract_mean(f1)
+    df2 = _subtract_mean(f2)
 
     power, kx, ky, kz   = real_to_xpow3d(df1, df2, xyz)
     power = np.real(power) # Throw away imaginary components, because they'll spherically average out to 0 (assuming f1 and f2 are real-valued)
@@ -76,15 +76,15 @@ def real_to_xpowsph(f1, f2, xyz):
 
 
 def real_to_xpowcyl(f1, f2, xyz):
-    df1 = f1 - np.mean(f1) # Subtract 0th order (constant) mode
-    df2 = f2 - np.mean(f2) # Subtract 0th order (constant) mode
+    df1 = _subtract_mean(f1)
+    df2 = _subtract_mean(f2)
 
     power, kx, ky, kz   = real_to_xpow3d(df1, df2, xyz)
     power = np.real(power) # Throw away imaginary components, because they'll spherically average out to 0 (assuming f1 and f2 are real-valued)
 
-    kprp, kpar, pcyl = f3d_to_fcylavg(power, kx, ky, kz)
+    ks, kpar, pcyl = f3d_to_fcylavg(power, kx, ky, kz)
 
-    return kprp, kpar, pcyl
+    return ks, kpar, pcyl
 
 
 def real_to_pow3d(f, xyz):
@@ -167,7 +167,7 @@ def f3d_to_fcylavg(f, x, y, z, bins=None, log=False):
     y :
     z :
     bins : 
-        Number of bins, in the form (kprp, kpar)
+        Number of bins, in the form (ks, kpar)
 
     Returns
     -------
@@ -267,3 +267,6 @@ def _is_evenly_spaced(arr):
 
 def _bin_midpoints(bin_edges):
     return 0.5*(bin_edges[:-1] + bin_edges[1:])
+
+def _subtract_mean(f):
+    return f - np.mean(f)

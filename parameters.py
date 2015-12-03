@@ -1,8 +1,12 @@
-import configparser
 import os
 import logging
 import pprint
 import astropy.cosmology as ac
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 def get_params(param_file_path):
     """

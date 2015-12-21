@@ -74,7 +74,7 @@ def lsun_to_uk(lum, nurest, vol, redshift, cosmo):
 
     Parameters
     ----------
-    lum : float or array
+    lum : float or array of floats
         total luminosity within spectral bin [Lsun]
 
     nurest : float
@@ -191,7 +191,7 @@ def load_halos(lc_path, cosmo, with_rsd):
     halos.z /= hubble_h
     halos.m /= hubble_h
 
-    # Convert RA and Dec to arcmin (from degrees)
+    # Convert RA and Dec from degrees to arcmin
     halos.ra  *= 60.
     halos.dec *= 60.
 
@@ -233,6 +233,15 @@ def save_cube(fpath, x, y, z, t):
     logging.info("Saving numpy data cube...")
     logging.info("  TO : {}.npz".format(fpath) + "\n")
     np.savez(fpath, x=x, y=y, z=z, t=t)
+
+
+def load_cube(fpath):
+    """Load data cube from file.
+    """
+    keys = ['x','y','z','t']
+    data = np.load(tcube_path)
+    x,y,z,t = [data[k] for k in keys]
+    return x, y, z, t
 
 
 def save_powersph(fpath, k, p, perr, pnoise, nmodes, fres):
@@ -302,14 +311,6 @@ def save_data(tcube_data, psph_data, pcyl_data, params):
     # TODO write parameters and timestamp
 
     # TODO test this method
-
-
-################################################################################
-# Convenience
-
-def load_cube(params):
-    fpath = "%s/%s.npz" % (params['io']['output_folder'], params['io']['fname_tcube'])
-    x, y, z, f = np.load(fpath)
 
 
 ################################################################################

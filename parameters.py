@@ -22,7 +22,11 @@ def get_params(param_file_path):
     params : dict
     """
 
-    config = configparser.ConfigParser(inline_comment_prefixes=(';',))
+    try:
+        config = configparser.ConfigParser(inline_comment_prefixes=(';',))
+    except TypeError: # In case "inline_comment_prefixes" isn't a valid argument, i.e. using Python 2
+        config = configparser.ConfigParser()
+
     config.read(param_file_path)
 
     # Get "raw" dictionaries from `config` object

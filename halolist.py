@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 
 """
     Class containing all halo properties
@@ -8,7 +9,7 @@ class HaloList(object):
     def __setattr__(self, name, value):
         # Prevent assigning properties that have not been explicitly defined in __init__
         if not hasattr(self, name):
-            raise NameError("%s is not (yet) an explicitly defined halo property.  Edit the 'halolist' module directly." % name)
+            warnings.warn("{:s} is not a default halo property.".format(name))
         object.__setattr__(self, name, value)
 
 
@@ -44,4 +45,6 @@ class HaloList(object):
         object.__setattr__(self, 'binidx',  None) # 1D (flattened) array of gridded bin indices
         
         object.__setattr__(self, 'sfr_base',  None)  # Star formation rate
+
+
 

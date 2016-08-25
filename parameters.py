@@ -1,5 +1,6 @@
 import os
 import logging
+import glob
 import pprint
 import astropy.cosmology as ac
 
@@ -53,7 +54,7 @@ def get_params(param_file_path):
 def get_io_parameters(raw_params):
     io = {}
     
-    io['lightcone_path'] = raw_params['lightcone_path']
+    io['lightcone_path'] = sorted(glob.glob(raw_params['lightcone_path']))
 
     io['output_folder']         = raw_params['output_folder']
     io['fname_tcube']           = raw_params['fname_tcube']

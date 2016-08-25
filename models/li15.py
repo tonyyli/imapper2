@@ -47,6 +47,12 @@ def line_luminosity(halos, sigma_sfr=0.3, delta_mf=1.0, alpha=1.37, beta=-1.74, 
 
     alphainv = 1./alpha
     lcop = lir**alphainv * 10**(-beta * alphainv)
+
+    # Add scatter
+    sigma_total = np.sqrt((sigma_sfr/alpha)**2 + sigma_lco**2)
+    if sigma_total > 0:
+        lcop = logscatter(lcop, sigma_total)
+
     
     lco = np.where(
             hm >= min_mass, 
@@ -54,3 +60,16 @@ def line_luminosity(halos, sigma_sfr=0.3, delta_mf=1.0, alpha=1.37, beta=-1.74, 
             0. ) # Set all halos below minimum halo mass to have 0 luminosity
 
     return lco
+
+
+def logscatter(x, dexscatter):
+    """Return array x, randomly scattered by a log-normal distribution with sigma=dexscatter.
+
+    Note: scatter maintains mean in linear space (not log space).
+    """
+    # Calculate random scalings
+    sigma       = dexscatter * 2.302585         # Stdev in log space (DIFFERENT from stdev in linear space), note: ln(10)=2.302585
+    mu          = -0.5*sigma**2
+    randscaling = np.random.lognormal(mu, sigma, x.shape)
+    xscattered  = np.where(x > 0, x*randscaling, x)
+    return xscattered

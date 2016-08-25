@@ -30,28 +30,30 @@ def main():
     # From parameter file, calculate intensity map + other outputs
     t0 = time.time()
 
-    imgrid = get_grid(params) # Create the grid object that will contain the 3D brightness cube
-    halos = get_halos(params) # Load and pre-process halo data
+    for lc_idx, lc_path in enumerate(params['io']['lightcone_path']):
+        imgrid = get_grid(params) # Create the grid object that will contain the 3D brightness cube
+        halos = get_halos(params, lc_path=lc_path) # Load and pre-process halo data
 
-    halos.lum = get_lum(halos, params) # Calculate halo line luminosities
-    imgrid.tcube = get_tcube(halos, imgrid, params) # From halos, make brightness temperature cube
+        halos.lum = get_lum(halos, params) # Calculate halo line luminosities
+        imgrid.tcube = get_tcube(halos, imgrid, params) # From halos, make brightness temperature cube
 
-    ##################################################
-    
-    # Calculate power spectra from temperature cube
-    ksph, psph        = get_powersph(imgrid)
-    kprp, kpar, pcyl  = get_powercyl(imgrid)
-    
-    # Calculate error bars
-    errsph, noise_power, nmodes, fres = get_powersph_errorbars(ksph, psph, params)
-    # TODO: get cylindrical power spectrum error bars
+        ##################################################
+        
+        # Calculate power spectra from temperature cube
+        ksph, psph        = get_powersph(imgrid)
+        kprp, kpar, pcyl  = get_powercyl(imgrid)
+        
+        # Calculate error bars
+        errsph, noise_power, nmodes, fres = get_powersph_errorbars(ksph, psph, params)
+        # TODO: get cylindrical power spectrum error bars
 
-    ##################################################
-    
-    # Write temperature cube and other stuff to file
-    save_tcube(imgrid, params) 
-    save_powersph(ksph, psph, errsph, noise_power, nmodes, fres, params)
-    save_powercyl(kprp, kpar, pcyl, params)
+        ##################################################
+        
+        # Write temperature cube and other stuff to file
+        save_tcube(imgrid, params, idx=lc_idx) 
+        save_powersph(ksph, psph, errsph, noise_power, nmodes, fres, params, idx=lc_idx)
+        save_powercyl(kprp, kpar, pcyl, params, idx=lc_idx)
+
     save_paramfile(params) # Copy parameter file to output folder
     
     ##################################################
@@ -95,10 +97,14 @@ def get_grid(params):
     return imgrid
 
 
-def get_halos(params):
+def get_halos(params, lc_path=None):
     """Returns HaloList object
     """
-    lc_path = params['io']['lightcone_path']
+
+    # If specific file is not specified, use the first (or only) file given in params
+    if lc_path is None:
+        lc_path = params['io']['lightcone_path'][0]
+    
     cosmo   = params['cosmo']
     with_rsd = params['enable_rsd']
 
@@ -112,7 +118,7 @@ def get_lum(halos, params):
     model_name = params['model']['name']
     model_parameters = params['model']['parameters']
 
-    model = importlib.import_module('models.{:s}'.format(model_name)) # `model` is a custom module that defines a function "line_luminosity"
+    model = importlib.import_module('imapper2.models.{:s}'.format(model_name)) # `model` is a custom module that defines a function "line_luminosity"
 
     lum = model.line_luminosity(halos, **model_parameters)
 
@@ -195,7 +201,7 @@ def get_powersph_errorbars(k, psph, params):
     return errorbars.powersph_error(psph, tsys, nfeeds, tobs, fovlen, fovlen, fwhm, nu_min, nu_max, dnu, nu0, k, cosmo)
 
 
-def save_tcube(imgrid, params):
+def save_tcube(imgrid, params, idx=None):
     if params['io']['save_tcube'] == False:
         logging.info("Note: Not saving data cube")
         return
@@ -203,6 +209,9 @@ def save_tcube(imgrid, params):
     outdir  = params['io']['output_folder']
     fname   = params['io']['fname_tcube']
     fpath   = os.path.join(outdir, fname)
+
+    if idx is not None:
+        fpath += "_{:d}".format(idx)
     
     xo, yo, zo  = imgrid.observed_cell_centers()
     tcube       = imgrid.tcube
@@ -210,17 +219,27 @@ def save_tcube(imgrid, params):
     fn.save_cube(fpath, xo, yo, zo, tcube)
 
 
-def save_powersph(ksph, psph, errsph, noise_power, nmodes, fres, params):
+def save_powersph(ksph, psph, errsph, noise_power, nmodes, fres, params, idx=None):
     try:
-        fpath = "%s/%s.dat" % (params['io']['output_folder'], params['io']['fname_powerspectrum'])
+        fpath = os.path.join(params['io']['output_folder'], params['io']['fname_powerspectrum'])
     except KeyError:
-        fpath = "%s/pspec.dat" % (params['io']['output_folder'])
+        fpath = os.path.join(params['io']['output_folder'], "pspec")
+
+    if idx is not None:
+        fpath += "_{:d}".format(idx)
+
+    fpath += ".dat"
 
     fn.save_powersph(fpath, ksph, psph, errsph, noise_power, nmodes, fres)
 
 
-def save_powercyl(kprp, kpar, pcyl, params):
-    fpath = "%s/%s_cyl.npz" % (params['io']['output_folder'], params['io']['fname_powerspectrum'])
+def save_powercyl(kprp, kpar, pcyl, params, idx=None):
+    fpath = "{:s}/{:s}_cyl".format(params['io']['output_folder'], params['io']['fname_powerspectrum'])
+
+    if idx is not None:
+        fpath += "_{:d}".format(idx)
+
+    fpath += ".npz"
 
     fn.save_powercyl(fpath, kprp, kpar, pcyl)
 

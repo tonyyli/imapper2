@@ -44,8 +44,11 @@ class IMGrid(object):
 
         # Create grids
         obins = observed_bins(abounds, da, fbounds, df)         # 3 arrays of length M+1, N+1, and P+1
-        cbins   = observed_to_comoving_grid(obins, nurest, cosmo)   # 3 arrays of length M+1, N+1, and P+1
-        tcube       = np.zeros( [a.size-1 for a in obins] )   # 3D array of shape MxNxP; initialize temperature in all cells to 0
+        cbins = observed_to_comoving_grid(obins, nurest, cosmo)   # 3 arrays of length M+1, N+1, and P+1
+        tcube = np.zeros( [a.size-1 for a in obins] )   # 3D array of shape MxNxP; initialize temperature in all cells to 0
+
+        # Store comoving survey volume for convenience
+        volume = np.sum(observed_to_covolume_grid(obins, nurest, cosmo))
 
         # Store grid arrays as object attributes
         # 
@@ -54,6 +57,7 @@ class IMGrid(object):
         object.__setattr__(self, 'obins', obins)
         object.__setattr__(self, 'cbins', cbins)
         object.__setattr__(self, 'tcube', tcube)
+        object.__setattr__(self, 'volume', volume)
 
 
     def observed_cell_centers(self):

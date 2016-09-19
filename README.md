@@ -59,7 +59,6 @@ the following arrays are expected:
 - 'zcos' : cosmological redshift (i.e. without redshift space distortions)
 - 'zlos' : line-of-sight redshift (i.e. *with* redshift space distortions)
 
-Note that this lightcone file needs to be generated separately.
 
 
 ## Output
@@ -81,16 +80,3 @@ x, y, z, t = [ data[k] for k in ('x', 'y', 'z', 't') ]
 
 ### Power spectra
 
-- Spherically averaged (1D)
-- Cylindrically averaged (2D)
-
-[needs updating]
-
-
-# Additional details
-
-## Parameters
-
-Descriptions for input parameters:
-
-[needs updating]

@@ -1,1 +1,1 @@
-*.py linguist-language=Python
+models/bwc13data/* linguist-vendored=True
